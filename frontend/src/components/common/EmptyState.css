@@ -32,3 +32,18 @@
 .empty-state--error .empty-state__title {
   color: var(--lm-red);
 }
+
+.empty-state__retry {
+  margin-top: var(--space-sm);
+  padding: 8px 20px;
+  background-color: var(--lm-primary-light);
+  color: var(--lm-white);
+  border: none;
+  border-radius: 6px;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.empty-state__retry:hover {
+  background-color: var(--lm-secondary-dark);
+}

@@ -16,23 +16,27 @@ export default function UsageTab({ orgId, startDate, endDate }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
-    fetchUsage(orgId, startDate, endDate)
+    fetchUsage(orgId, startDate, endDate, controller.signal)
       .then((res) => {
         setData(res.data);
         setLoading(false);
       })
       .catch((err) => {
+        if (err.code === 'ERR_CANCELED') return;
         setError(err?.response?.data?.error || 'Failed to load usage data.');
         setLoading(false);
       });
-  }, [orgId, startDate, endDate]);
+    return () => controller.abort();
+  }, [orgId, startDate, endDate, retryCount]);
 
   if (loading) return <LoadingSpinner message="Loading usage data..." />;
-  if (error) return <EmptyState icon="⚠️" title="Error" description={error} variant="error" />;
+  if (error) return <EmptyState icon="⚠️" title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
   if (!data) return <EmptyState icon="📭" title="No data" description="No usage data found for this period." />;
 
   const { kpis = {}, daily_trend = [], user_list = [] } = data;

@@ -14,7 +14,7 @@ import json
 import os
 import sys
 import traceback
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 try:
@@ -119,7 +119,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = HTTPServer(("0.0.0.0", PORT), DashboardHandler)
+    server = ThreadingHTTPServer(("0.0.0.0", PORT), DashboardHandler)
     print(f"Local dashboard server running at http://localhost:{PORT}")
     print("Press Ctrl+C to stop.")
     try:

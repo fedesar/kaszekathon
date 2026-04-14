@@ -6,6 +6,8 @@ import os
 import time
 from typing import Any, Optional, Sequence
 
+import threading
+
 import boto3
 import pymysql
 
@@ -17,26 +19,26 @@ try:
 except ImportError:
     pass
 
-_CONNECTION = None
-_TOKEN_CREATION_TIME = 0.0
+_local = threading.local()
 _MAX_TOKEN_LIFETIME_SECONDS = 14 * 60
 
 
 def get_connection():
-    global _CONNECTION, _TOKEN_CREATION_TIME
-
     now = time.time()
-    if _CONNECTION is not None and (now - _TOKEN_CREATION_TIME) < _MAX_TOKEN_LIFETIME_SECONDS:
+    conn = getattr(_local, "connection", None)
+    token_time = getattr(_local, "token_creation_time", 0.0)
+
+    if conn is not None and (now - token_time) < _MAX_TOKEN_LIFETIME_SECONDS:
         try:
-            with _CONNECTION.cursor() as cursor:
+            with conn.cursor() as cursor:
                 cursor.execute("SELECT 1")
-            return _CONNECTION
+            return conn
         except Exception:
             try:
-                _CONNECTION.close()
+                conn.close()
             except Exception:
                 pass
-            _CONNECTION = None
+            _local.connection = None
 
     db_host = os.environ["LEANMOTE_DB_HOST"]
     db_user = os.environ["LEANMOTE_DB_USER"]
@@ -58,8 +60,8 @@ def get_connection():
         rds_client = session.client("rds", region_name=region)
         password = rds_client.generate_db_auth_token(DBHostname=db_host, Port=db_port, DBUsername=db_user)
 
-    _TOKEN_CREATION_TIME = now
-    _CONNECTION = pymysql.connect(
+    _local.token_creation_time = now
+    _local.connection = pymysql.connect(
         host=db_host,
         user=db_user,
         password=password,
@@ -70,7 +72,7 @@ def get_connection():
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=True,
     )
-    return _CONNECTION
+    return _local.connection
 
 
 def db_fetch(sql: str, params: Optional[Sequence[Any]] = None):

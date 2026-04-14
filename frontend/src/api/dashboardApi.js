@@ -8,23 +8,26 @@ const client = axios.create({
   headers: {
     'X-Api-Key': API_KEY,
   },
-  timeout: 15000,
+  timeout: 30000,
 });
 
-export function fetchUsage(orgId, startDate, endDate) {
+export function fetchUsage(orgId, startDate, endDate, signal) {
   return client.get('/api/v1/usage', {
     params: { org_id: orgId, start_date: startDate, end_date: endDate },
+    signal,
   });
 }
 
-export function fetchImpact(orgId, startDate, endDate) {
+export function fetchImpact(orgId, startDate, endDate, signal) {
   return client.get('/api/v1/impact', {
     params: { org_id: orgId, start_date: startDate, end_date: endDate },
+    signal,
   });
 }
 
-export function fetchRoi(orgId, startDate, endDate) {
+export function fetchRoi(orgId, startDate, endDate, signal) {
   return client.get('/api/v1/roi', {
     params: { org_id: orgId, start_date: startDate, end_date: endDate },
+    signal,
   });
 }
