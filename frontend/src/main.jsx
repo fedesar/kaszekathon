@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import './styles/variables.css';
-import './components/roi/RoiExtra.css';
+import './components/license-efficiency/LicenseEfficiencyExtra.css';
 import App from './App.jsx';
 
 const theme = createTheme({

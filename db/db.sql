@@ -66,6 +66,7 @@ CREATE TABLE repo_merge_requests (
     author_internal_id     INT UNSIGNED    NULL,
     author_app_id          VARCHAR(255)    NULL,
     author_name            VARCHAR(255)    NULL,
+    author_email           VARCHAR(255)    NULL,
     created_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

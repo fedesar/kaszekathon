@@ -25,8 +25,8 @@ export function fetchImpact(orgId, startDate, endDate, signal) {
   });
 }
 
-export function fetchRoi(orgId, startDate, endDate, signal) {
-  return client.get('/api/v1/roi', {
+export function fetchLicenseEfficiency(orgId, startDate, endDate, signal) {
+  return client.get('/api/v1/license-efficiency', {
     params: { org_id: orgId, start_date: startDate, end_date: endDate },
     signal,
   });

@@ -12,6 +12,7 @@ const COLUMNS = [
   { id: 'email', label: 'User', numeric: false },
   { id: 'active_days', label: 'Active Days', numeric: true },
   { id: 'sessions', label: 'Sessions', numeric: true },
+  { id: 'tokens_consumed', label: 'Tokens', numeric: true },
   { id: 'loc_added', label: 'LOC Added', numeric: true },
   { id: 'prs', label: 'AI PRs', numeric: true },
   { id: 'commits', label: 'AI Commits', numeric: true },
@@ -88,6 +89,7 @@ export default function UserActivityTable({ data }) {
                   <TableCell sx={{ fontWeight: 500, fontSize: '13px' }}>{row.email || '—'}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.active_days}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.sessions?.toLocaleString()}</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '13px' }}>{row.tokens_consumed?.toLocaleString()}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.loc_added?.toLocaleString()}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.prs}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.commits}</TableCell>

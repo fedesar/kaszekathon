@@ -19,7 +19,7 @@ except ImportError:
     pass
 
 from services.logging_utils import log_json, set_invocation_context
-from handlers import health, usage, impact, roi
+from handlers import health, usage, impact, license_efficiency
 
 
 _CORS_HEADERS = {
@@ -111,8 +111,8 @@ def handle_api_gateway_event(event: dict) -> dict:
                 return _response(200, usage.handle(params))
             if path == "/api/v1/impact":
                 return _response(200, impact.handle(params))
-            if path == "/api/v1/roi":
-                return _response(200, roi.handle(params))
+            if path == "/api/v1/license-efficiency":
+                return _response(200, license_efficiency.handle(params))
         except Exception as exc:
             log_json("error", "handler", str(exc), traceback=traceback.format_exc())
             return _response(500, {"error": "Internal server error"})

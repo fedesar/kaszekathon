@@ -26,7 +26,7 @@ except ImportError:
 # Add project root to sys.path so imports resolve the same as in Lambda
 sys.path.insert(0, os.path.dirname(__file__))
 
-from handlers import health, usage, impact, roi  # noqa: E402
+from handlers import health, usage, impact, license_efficiency  # noqa: E402
 
 
 _CORS_HEADERS = {
@@ -106,8 +106,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 _send_json(self, 200, usage.handle(params))
             elif path == "/api/v1/impact":
                 _send_json(self, 200, impact.handle(params))
-            elif path == "/api/v1/roi":
-                _send_json(self, 200, roi.handle(params))
+            elif path == "/api/v1/license-efficiency":
+                _send_json(self, 200, license_efficiency.handle(params))
             else:
                 _send_json(self, 404, {"error": "Not found"})
 

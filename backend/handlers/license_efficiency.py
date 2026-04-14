@@ -1,4 +1,4 @@
-"""AI ROI handler — investment summary, adoption segments, and delivery output."""
+"""License Efficiency handler — investment summary, adoption segments, and delivery output."""
 
 from __future__ import annotations
 
@@ -149,15 +149,15 @@ def handle(params: Dict[str, Any]) -> dict:
     adoption = _segment_actors(by_actor, period_days)
     seats_summary = _default_seats_summary(active_users)
     total_monthly_cost = sum(t["monthly_cost"] for t in seats_summary)
-    roi_pct = round((total_investment / total_monthly_cost * 100) - 100, 1) if total_monthly_cost > 0 else 0.0
+    license_efficiency_pct = round((total_investment / total_monthly_cost * 100) - 100, 1) if total_monthly_cost > 0 else 0.0
 
     return {
         "from": start_date,
         "to": end_date,
-        "roi_summary": {
+        "license_efficiency_summary": {
             "total_investment_usd": round(total_investment, 2),
             "cost_per_pr": cost_per_pr,
-            "roi_pct": roi_pct,
+            "license_efficiency_pct": license_efficiency_pct,
         },
         "seats_summary": seats_summary,
         "adoption_segments": adoption,

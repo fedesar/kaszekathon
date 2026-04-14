@@ -2,6 +2,8 @@
 
 Built for the **Kaszek x Anthropic x Digital House Hackathon**.
 
+**Live demo:** [https://ai-governance.leanmote.com/](https://ai-governance.leanmote.com/)
+
 Leanmote is a serverless analytics dashboard that helps engineering organizations track AI code assistant adoption, measure real impact on delivery speed, and calculate return on investment — all in one place.
 
 ---

@@ -41,8 +41,8 @@ Resources:
           Properties:
             Path: /api/v1/impact
             Method: GET
-        Roi:
+        LicenseEfficiency:
           Type: HttpApi
           Properties:
-            Path: /api/v1/roi
+            Path: /api/v1/license-efficiency
             Method: GET

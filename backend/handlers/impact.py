@@ -14,7 +14,7 @@ from typing import Any, Dict, List
 
 from services import mysql_db
 from services.otlp_parser import parse_rows_to_records
-from services.git_metrics import fetch_by_email, enrich_actors_with_git
+from services.git_metrics import fetch_by_email, fetch_total_prs, enrich_actors_with_git
 from functions.claude_code.normalize import build_actor_usage, build_analytics_summary
 
 
@@ -124,7 +124,7 @@ def handle(params: Dict[str, Any]) -> dict:
     loc = totals.get("lines_of_code") or {}
 
     ai_commits = int(totals.get("commits_by_claude_code") or 0)
-    ai_prs = int(totals.get("pull_requests_by_claude_code") or 0)
+    ai_prs = int(totals.get("pull_requests_by_claude_code") or 0) or fetch_total_prs(start_date, end_date)
     ai_loc = int(loc.get("added") or 0)
 
     # Estimate total values: assume AI represents ~70% of activity as a heuristic baseline

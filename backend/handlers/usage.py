@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 
 from services import mysql_db
 from services.otlp_parser import parse_rows_to_records
-from services.git_metrics import fetch_by_email, enrich_actors_with_git
+from services.git_metrics import fetch_by_email, fetch_total_prs, enrich_actors_with_git
 from functions.claude_code.normalize import build_actor_usage, build_analytics_summary
 
 
@@ -53,6 +53,12 @@ def _build_user_list(by_actor: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         total_actions = total_accepted + total_rejected
         acceptance_rate = round(total_accepted / total_actions, 4) if total_actions > 0 else 0.0
 
+        tokens_consumed = sum(
+            sum(m.get("tokens", {}).get(k, 0) for k in ("input", "output", "cache_creation", "cache_read"))
+            for m in actor.get("model_breakdown", [])
+            if isinstance(m, dict)
+        )
+
         users.append(
             {
                 "email": actor.get("email_address") or actor.get("actor_label") or "",
@@ -61,6 +67,7 @@ def _build_user_list(by_actor: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "loc_added": int(loc.get("added") or 0),
                 "prs": int(core.get("pull_requests_by_claude_code") or 0),
                 "commits": int(core.get("commits_by_claude_code") or 0),
+                "tokens_consumed": tokens_consumed,
                 "tool_acceptance_rate": acceptance_rate,
             }
         )
@@ -98,7 +105,7 @@ def handle(params: Dict[str, Any]) -> dict:
             "total_sessions": int(totals.get("num_sessions") or 0),
             "active_users": summary.get("actor_count", 0),
             "loc_added": int(loc.get("added") or 0),
-            "prs_by_ai": int(totals.get("pull_requests_by_claude_code") or 0),
+            "prs_by_ai": int(totals.get("pull_requests_by_claude_code") or 0) or fetch_total_prs(start_date, end_date),
             "ai_commits": int(totals.get("commits_by_claude_code") or 0),
         },
         "daily_trend": _build_daily_trend(records),

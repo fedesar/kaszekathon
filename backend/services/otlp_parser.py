@@ -24,7 +24,7 @@ COST ENCODING
   We store amounts as MICRO-USD (multiply by 1_000_000) so that
     0.0166836 → 16_683
   Callers that need real USD must divide by 1_000_000.
-  See handlers/roi.py for the corresponding division.
+  See handlers/license_efficiency.py for the corresponding division.
 """
 
 from __future__ import annotations

@@ -4,10 +4,10 @@ import Tab from '@mui/material/Tab';
 import './AIDashboard.css';
 import UsageTab from '../usage/UsageTab.jsx';
 import ImpactTab from '../impact/ImpactTab.jsx';
-import RoiTab from '../roi/RoiTab.jsx';
+import LicenseEfficiencyTab from '../license-efficiency/LicenseEfficiencyTab.jsx';
 import AgentsTab from '../agents/AgentsTab.jsx';
 
-const TABS = ['AI Usage', 'AI Impact', 'AI ROI', 'AI Agents'];
+const TABS = ['AI Usage', 'AI Impact', 'License Efficiency', 'AI Agents'];
 
 export default function AIDashboard({ orgId, startDate, endDate }) {
   const [activeTab, setActiveTab] = useState(0);
@@ -34,7 +34,7 @@ export default function AIDashboard({ orgId, startDate, endDate }) {
           <ImpactTab orgId={orgId} startDate={startDate} endDate={endDate} />
         )}
         {activeTab === 2 && (
-          <RoiTab orgId={orgId} startDate={startDate} endDate={endDate} />
+          <LicenseEfficiencyTab orgId={orgId} startDate={startDate} endDate={endDate} />
         )}
         {activeTab === 3 && <AgentsTab />}
       </div>

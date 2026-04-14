@@ -13,7 +13,7 @@ export default function TopHeader({ startDate, endDate, onStartDateChange, onEnd
         <div className="top-header__divider" aria-hidden="true" />
         <div className="top-header__title-block">
           <h1 className="top-header__title">AI Governance</h1>
-          <span className="top-header__subtitle">Monitor AI tool usage, impact, and ROI across your team</span>
+          <span className="top-header__subtitle">Monitor AI tool usage, impact, and license efficiency across your team</span>
         </div>
       </div>
 

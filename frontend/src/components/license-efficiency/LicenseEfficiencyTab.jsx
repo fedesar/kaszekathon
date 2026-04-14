@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './RoiTab.css';
-import { fetchRoi } from '../../api/dashboardApi.js';
+import './LicenseEfficiencyTab.css';
+import { fetchLicenseEfficiency } from '../../api/dashboardApi.js';
 import KpiCard from '../common/KpiCard.jsx';
 import Icon from '../common/Icon.jsx';
 import LoadingSpinner from '../common/LoadingSpinner.jsx';
@@ -15,7 +15,7 @@ function formatCurrency(n) {
   return `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-export default function RoiTab({ orgId, startDate, endDate }) {
+export default function LicenseEfficiencyTab({ orgId, startDate, endDate }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,25 +25,25 @@ export default function RoiTab({ orgId, startDate, endDate }) {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    fetchRoi(orgId, startDate, endDate, controller.signal)
+    fetchLicenseEfficiency(orgId, startDate, endDate, controller.signal)
       .then((res) => {
         setData(res.data);
         setLoading(false);
       })
       .catch((err) => {
         if (err.code === 'ERR_CANCELED') return;
-        setError(err?.response?.data?.error || 'Failed to load ROI data.');
+        setError(err?.response?.data?.error || 'Failed to load License Efficiency data.');
         setLoading(false);
       });
     return () => controller.abort();
   }, [orgId, startDate, endDate, retryCount]);
 
-  if (loading) return <LoadingSpinner message="Loading ROI data..." />;
+  if (loading) return <LoadingSpinner message="Loading License Efficiency data..." />;
   if (error) return <EmptyState title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
-  if (!data) return <EmptyState title="No data" description="No ROI data found for this period." />;
+  if (!data) return <EmptyState title="No data" description="No License Efficiency data found for this period." />;
 
   const {
-    roi_summary = {},
+    license_efficiency_summary = {},
     seats_summary = [],
     adoption_segments = {},
     cost_vs_delivery = [],
@@ -51,39 +51,39 @@ export default function RoiTab({ orgId, startDate, endDate }) {
   } = data;
 
   return (
-    <div className="roi-tab">
-      <div className="roi-tab__kpi-grid">
+    <div className="le-tab">
+      <div className="le-tab__kpi-grid">
         <KpiCard
           label="Total Investment"
-          value={formatCurrency(roi_summary.total_investment_usd)}
+          value={formatCurrency(license_efficiency_summary.total_investment_usd)}
           icon={<Icon name="creditCard" size={18} />}
           variant="highlight"
         />
         <KpiCard
           label="Cost per PR"
-          value={formatCurrency(roi_summary.cost_per_pr)}
+          value={formatCurrency(license_efficiency_summary.cost_per_pr)}
           icon={<Icon name="gitPullRequest" size={18} />}
         />
         <KpiCard
-          label="ROI"
-          value={roi_summary.roi_pct != null ? `${roi_summary.roi_pct}%` : '—'}
+          label="License Efficiency"
+          value={license_efficiency_summary.license_efficiency_pct != null ? `${license_efficiency_summary.license_efficiency_pct}%` : '—'}
           icon={<Icon name="trendingUp" size={18} />}
           variant="success"
         />
       </div>
 
-      <div className="roi-tab__tools-row">
+      <div className="le-tab__tools-row">
         {seats_summary.map((tool) => (
           <ToolInvestmentCard key={tool.tool} {...tool} />
         ))}
       </div>
 
-      <div className="roi-tab__analytics-row">
+      <div className="le-tab__analytics-row">
         <AdoptionDonutChart segments={adoption_segments} />
-        <DeliveryOutputChart data={cost_vs_delivery} costPerPr={roi_summary.cost_per_pr} />
+        <DeliveryOutputChart data={cost_vs_delivery} costPerPr={license_efficiency_summary.cost_per_pr} />
       </div>
 
-      <div className="roi-tab__wau-row">
+      <div className="le-tab__wau-row">
         <WeeklyActiveUsersChart data={weekly_active_users} />
       </div>
     </div>
