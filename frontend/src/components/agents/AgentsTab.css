@@ -1,0 +1,114 @@
+/* ===================================================
+   AgentsTab — "Coming Soon" overlay
+   =================================================== */
+
+.agents-tab {
+  position: relative;
+  min-height: 500px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--lm-white);
+  box-shadow: var(--shadow-card);
+}
+
+.agents-tab__blurred-bg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  filter: blur(6px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.agents-tab__fake-card {
+  background-color: var(--lm-light-grey);
+  border-radius: var(--radius-md);
+  height: 160px;
+}
+
+.agents-tab__overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  padding: var(--space-xl);
+}
+
+.agents-tab__coming-soon-card {
+  background-color: var(--lm-white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  padding: var(--space-xxl) var(--space-xl);
+  text-align: center;
+  max-width: 440px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.agents-tab__icon {
+  font-size: 56px;
+}
+
+.agents-tab__title {
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  color: var(--lm-primary-dark);
+}
+
+.agents-tab__subtitle {
+  font-size: var(--font-size-md);
+  color: var(--lm-medium-grey);
+  line-height: 1.5;
+}
+
+.agents-tab__tools {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+  align-items: center;
+}
+
+.agents-tab__tool-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--gray-background);
+  border: 1px solid var(--lm-light-grey);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--lm-strong-gray);
+}
+
+.agents-tab__badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--lm-primary-light);
+  color: var(--lm-white);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .agents-tab__blurred-bg {
+    grid-template-columns: 1fr;
+  }
+
+  .agents-tab__tools {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}

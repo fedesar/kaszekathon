@@ -1,0 +1,60 @@
+/* ===================================================
+   ImpactTab — AI Impact dashboard tab
+   =================================================== */
+
+.impact-tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Lead time section ──────────────────────────── */
+.impact-tab__lead-time-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ── Share donuts row ───────────────────────────── */
+.impact-tab__donuts-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Bottom row: batch + scatter ────────────────── */
+.impact-tab__bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.impact-tab__scatter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Tablet ─────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .impact-tab__donuts-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .impact-tab__bottom-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .impact-tab__scatter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .impact-tab__donuts-row,
+  .impact-tab__bottom-row,
+  .impact-tab__scatter-grid {
+    grid-template-columns: 1fr;
+  }
+}

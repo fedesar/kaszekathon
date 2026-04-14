@@ -1,0 +1,48 @@
+/* ===================================================
+   AIDashboard — main wrapper with tab navigation
+   =================================================== */
+
+.ai-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ai-dashboard__tab-bar {
+  background-color: var(--lm-white);
+  border-bottom: 1px solid var(--lm-light-grey);
+  margin-bottom: var(--space-lg);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.ai-dashboard__tab-panel {
+  min-height: 400px;
+}
+
+/* MUI Tabs override to match Leanmote style */
+.ai-dashboard__tab-bar .MuiTabs-indicator {
+  background-color: var(--lm-primary-light);
+  height: 3px;
+  border-radius: 2px 2px 0 0;
+}
+
+.ai-dashboard__tab-bar .MuiTab-root {
+  color: var(--lm-strong-gray);
+  padding: 14px 20px;
+}
+
+.ai-dashboard__tab-bar .MuiTab-root.Mui-selected {
+  color: var(--lm-primary-light);
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ai-dashboard__tab-bar {
+    margin-bottom: var(--space-md);
+  }
+
+  .ai-dashboard__tab-bar .MuiTab-root {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+}

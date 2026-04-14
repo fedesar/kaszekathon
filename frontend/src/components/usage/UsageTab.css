@@ -1,0 +1,44 @@
+/* ===================================================
+   UsageTab — AI Usage dashboard tab
+   =================================================== */
+
+.usage-tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── KPI Grid ───────────────────────────────────── */
+.usage-tab__kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Charts row ─────────────────────────────────── */
+.usage-tab__charts-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+/* ── Table ──────────────────────────────────────── */
+.usage-tab__table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Tablet ─────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .usage-tab__kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .usage-tab__kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

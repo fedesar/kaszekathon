@@ -1,0 +1,87 @@
+/* ===================================================
+   ToolInvestmentCard — per-tool cost and utilization card
+   =================================================== */
+
+.tool-card {
+  background-color: var(--lm-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.tool-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.tool-card__logo {
+  max-height: 32px;
+  max-width: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.tool-card__name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--lm-primary-dark);
+}
+
+.tool-card__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.tool-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--lm-strong-gray);
+}
+
+.tool-card__row-value {
+  font-weight: 600;
+  color: var(--lm-primary-dark);
+}
+
+/* ── Utilization bar ────────────────────────────── */
+.tool-card__util-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.tool-card__util-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--lm-medium-grey);
+}
+
+.tool-card__util-bar-track {
+  height: 6px;
+  background-color: var(--lm-light-grey);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.tool-card__util-bar-fill {
+  height: 100%;
+  background-color: var(--lm-primary-light);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.tool-card__util-bar-fill--high {
+  background-color: var(--lm-green);
+}
+
+.tool-card__util-bar-fill--low {
+  background-color: var(--lm-yellow);
+}

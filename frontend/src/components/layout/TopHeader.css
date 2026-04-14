@@ -1,0 +1,107 @@
+/* ===================================================
+   Top Header — page title + date range filter bar
+   =================================================== */
+
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  background-color: var(--lm-white);
+  border-bottom: 1px solid var(--lm-light-grey);
+  padding: 0 var(--space-lg);
+  flex-shrink: 0;
+  gap: var(--space-md);
+}
+
+.top-header__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.top-header__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--lm-primary-dark);
+  white-space: nowrap;
+}
+
+.top-header__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--lm-medium-grey);
+}
+
+/* ── Date range controls ────────────────────────── */
+.top-header__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.top-header__date-label {
+  font-size: var(--font-size-sm);
+  color: var(--lm-strong-gray);
+  white-space: nowrap;
+}
+
+.top-header__date-input {
+  height: 36px;
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--lm-light-grey);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--lm-black);
+  background-color: var(--lm-white);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.top-header__date-input:hover,
+.top-header__date-input:focus {
+  border-color: var(--lm-primary-light);
+  outline: none;
+}
+
+.top-header__date-separator {
+  font-size: var(--font-size-sm);
+  color: var(--lm-medium-grey);
+}
+
+/* ── Tablet ─────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .top-header {
+    padding: 0 var(--space-md);
+  }
+
+  .top-header__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .top-header__subtitle {
+    display: none;
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .top-header {
+    flex-direction: column;
+    height: auto;
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .top-header__controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .top-header__date-input {
+    flex: 1;
+    min-width: 120px;
+  }
+}

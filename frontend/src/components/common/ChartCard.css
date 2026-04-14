@@ -1,0 +1,49 @@
+/* ===================================================
+   ChartCard — white card wrapper for charts and tables
+   =================================================== */
+
+.chart-card {
+  background-color: var(--lm-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--lm-light-grey);
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.chart-card__title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--lm-primary-dark);
+}
+
+.chart-card__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--lm-medium-grey);
+  margin-top: 2px;
+}
+
+.chart-card__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.chart-card__body {
+  padding: var(--space-lg);
+  flex: 1;
+}
+
+.chart-card__body--no-padding {
+  padding: 0;
+}

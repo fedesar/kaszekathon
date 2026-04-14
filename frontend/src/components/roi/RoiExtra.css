@@ -1,0 +1,22 @@
+/* ===================================================
+   ROI shared extras — cost badge and donut center label
+   Imported globally via main.jsx or App.css
+   =================================================== */
+
+/* Cost-per-PR badge used in DeliveryOutputChart toolbar */
+.cost-per-pr-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--lm-primary-dark);
+  color: var(--lm-white);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Donut center label used in ShareDonutChart */
+.share-donut__center-label {
+  display: none; /* purely presentational; actual % shown in slice label */
+}

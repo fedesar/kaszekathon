@@ -1,0 +1,59 @@
+/* ===================================================
+   App root layout — sidebar + main column
+   Desktop-first, collapses at tablet/mobile
+   =================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  font-family: var(--font-family);
+  background-color: var(--gray-background);
+  color: var(--lm-black);
+}
+
+.app-root {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+}
+
+/* ── Tablet ────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .app-content {
+    padding: var(--space-md);
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .app-root {
+    flex-direction: column;
+  }
+
+  .app-content {
+    padding: var(--space-sm);
+  }
+}

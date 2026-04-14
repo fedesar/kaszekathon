@@ -1,0 +1,68 @@
+/* ===================================================
+   Leanmote Design Tokens — CSS Custom Properties
+   Matches mvp/public/css/custom.css :root block
+   =================================================== */
+
+:root {
+  /* Brand colours */
+  --lm-primary-dark:   #1C2E62;
+  --lm-secondary-dark: #4F7AB0;
+  --lm-primary-light:  #419FFF;
+  --lm-white:          #FFFFFF;
+
+  /* Neutral scale */
+  --lm-light-grey:     #E0E0E0;
+  --lm-medium-grey:    #999999;
+  --lm-strong-gray:    #666666;
+  --lm-black:          #000000;
+
+  /* Semantic colours */
+  --lm-red:            #FF3366;
+  --lm-green:          #40D390;
+  --lm-yellow:         #ECB22E;
+  --lm-violet:         #C91EEB;
+
+  /* Surface */
+  --gray-background:   #F9F9F9;
+
+  /* Chart palette */
+  --chart-blue:        #419FFF;
+  --chart-navy:        #1C2E62;
+  --chart-green:       #40D390;
+  --chart-yellow:      #ECB22E;
+  --chart-red:         #FF3366;
+  --chart-violet:      #C91EEB;
+  --chart-teal:        #00C9B1;
+  --chart-grey:        #B0BAC9;
+
+  /* Layout dimensions */
+  --sidebar-width:     260px;
+  --sidebar-collapsed: 72px;
+  --header-height:     64px;
+
+  /* Spacing */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-xxl: 48px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  --shadow-sidebar: 2px 0 8px rgba(0,0,0,0.12);
+
+  /* Typography */
+  --font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-size-xs:  11px;
+  --font-size-sm:  12px;
+  --font-size-md:  14px;
+  --font-size-lg:  16px;
+  --font-size-xl:  20px;
+  --font-size-xxl: 28px;
+}

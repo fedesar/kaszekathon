@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: Kaszekathon AI Governance Dashboard Lambda
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: python3.12
+    Environment:
+      Variables:
+        LEANMOTE_DB_HOST: !Sub "{{resolve:ssm:/leanmote/db/host}}"
+        LEANMOTE_DB_USER: !Sub "{{resolve:ssm:/leanmote/db/user}}"
+        LEANMOTE_DB_NAME: !Sub "{{resolve:ssm:/leanmote/db/name}}"
+        LEANMOTE_DB_PORT: "3306"
+        LEANMOTE_AWS_REGION: !Ref AWS::Region
+        DASHBOARD_API_KEY: !Sub "{{resolve:ssm:/leanmote/dashboard/api-key}}"
+
+Resources:
+  DashboardFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: kaszekathon-ai-dashboard
+      Handler: lambda_function.lambda_handler
+      CodeUri: .
+      Description: AI Governance Dashboard API
+      Events:
+        Health:
+          Type: HttpApi
+          Properties:
+            Path: /health
+            Method: GET
+        Usage:
+          Type: HttpApi
+          Properties:
+            Path: /api/v1/usage
+            Method: GET
+        Impact:
+          Type: HttpApi
+          Properties:
+            Path: /api/v1/impact
+            Method: GET
+        Roi:
+          Type: HttpApi
+          Properties:
+            Path: /api/v1/roi
+            Method: GET

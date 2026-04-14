@@ -1,0 +1,14 @@
+/* ===================================================
+   LoadingSpinner — centred spinner overlay
+   =================================================== */
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xxl);
+  gap: var(--space-md);
+  flex-direction: column;
+  color: var(--lm-medium-grey);
+  font-size: var(--font-size-sm);
+}

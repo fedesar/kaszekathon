@@ -1,0 +1,56 @@
+/* ===================================================
+   KpiCard — metric highlight card
+   =================================================== */
+
+.kpi-card {
+  background-color: var(--lm-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.kpi-card__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--lm-medium-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-card__value {
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  color: var(--lm-primary-dark);
+  line-height: 1.1;
+}
+
+.kpi-card__value--highlight {
+  color: var(--lm-primary-light);
+}
+
+.kpi-card__value--success {
+  color: var(--lm-green);
+}
+
+.kpi-card__value--warning {
+  color: var(--lm-yellow);
+}
+
+.kpi-card__value--danger {
+  color: var(--lm-red);
+}
+
+.kpi-card__subtext {
+  font-size: var(--font-size-xs);
+  color: var(--lm-medium-grey);
+  margin-top: var(--space-xs);
+}
+
+.kpi-card__icon {
+  font-size: 28px;
+  margin-bottom: var(--space-xs);
+}

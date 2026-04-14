@@ -1,0 +1,60 @@
+/* ===================================================
+   RoiTab — AI ROI dashboard tab
+   =================================================== */
+
+.roi-tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── KPI Grid ───────────────────────────────────── */
+.roi-tab__kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Tool cards row ─────────────────────────────── */
+.roi-tab__tools-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Adoption + delivery row ────────────────────── */
+.roi-tab__analytics-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-md);
+}
+
+/* ── WAU full-width row ─────────────────────────── */
+.roi-tab__wau-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+/* ── Tablet ─────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .roi-tab__tools-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .roi-tab__analytics-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .roi-tab__kpi-grid,
+  .roi-tab__tools-row {
+    grid-template-columns: 1fr;
+  }
+
+  .roi-tab__analytics-row {
+    grid-template-columns: 1fr;
+  }
+}
