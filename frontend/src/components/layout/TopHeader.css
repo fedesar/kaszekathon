@@ -1,5 +1,5 @@
 /* ===================================================
-   Top Header — page title + date range filter bar
+   Top Header — logo + page title + date range filter
    =================================================== */
 
 .top-header {
@@ -7,29 +7,55 @@
   align-items: center;
   justify-content: space-between;
   height: var(--header-height);
-  background-color: var(--lm-white);
-  border-bottom: 1px solid var(--lm-light-grey);
-  padding: 0 var(--space-lg);
+  background-color: var(--lm-primary-dark);
+  padding: 0 var(--space-xl);
   flex-shrink: 0;
   gap: var(--space-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Left: logo + divider + title ───────────────── */
+.top-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.top-header__logo {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.top-header__divider {
+  width: 1px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.20);
+  flex-shrink: 0;
 }
 
 .top-header__title-block {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
+  min-width: 0;
 }
 
 .top-header__title {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--lm-primary-dark);
+  color: var(--lm-white);
   white-space: nowrap;
 }
 
 .top-header__subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--lm-medium-grey);
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Date range controls ────────────────────────── */
@@ -42,32 +68,34 @@
 
 .top-header__date-label {
   font-size: var(--font-size-sm);
-  color: var(--lm-strong-gray);
+  color: rgba(255, 255, 255, 0.70);
   white-space: nowrap;
 }
 
 .top-header__date-input {
-  height: 36px;
+  height: 34px;
   padding: 0 var(--space-sm);
-  border: 1px solid var(--lm-light-grey);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   font-family: var(--font-family);
-  color: var(--lm-black);
-  background-color: var(--lm-white);
+  color: var(--lm-white);
+  background-color: rgba(255, 255, 255, 0.10);
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  color-scheme: dark;
 }
 
 .top-header__date-input:hover,
 .top-header__date-input:focus {
   border-color: var(--lm-primary-light);
+  background-color: rgba(255, 255, 255, 0.15);
   outline: none;
 }
 
 .top-header__date-separator {
   font-size: var(--font-size-sm);
-  color: var(--lm-medium-grey);
+  color: rgba(255, 255, 255, 0.40);
 }
 
 /* ── Tablet ─────────────────────────────────────── */
@@ -76,11 +104,11 @@
     padding: 0 var(--space-md);
   }
 
-  .top-header__title {
-    font-size: var(--font-size-lg);
+  .top-header__subtitle {
+    display: none;
   }
 
-  .top-header__subtitle {
+  .top-header__divider {
     display: none;
   }
 }
@@ -93,6 +121,11 @@
     padding: var(--space-sm) var(--space-md);
     gap: var(--space-sm);
     align-items: flex-start;
+  }
+
+  .top-header__subtitle,
+  .top-header__divider {
+    display: none;
   }
 
   .top-header__controls {

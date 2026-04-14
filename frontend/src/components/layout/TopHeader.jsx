@@ -4,9 +4,17 @@ import './TopHeader.css';
 export default function TopHeader({ startDate, endDate, onStartDateChange, onEndDateChange }) {
   return (
     <header className="top-header">
-      <div className="top-header__title-block">
-        <h1 className="top-header__title">AI Governance</h1>
-        <span className="top-header__subtitle">Monitor AI tool usage, impact, and ROI across your team</span>
+      <div className="top-header__left">
+        <img
+          src="/leanmote-logo-white.png"
+          alt="Leanmote"
+          className="top-header__logo"
+        />
+        <div className="top-header__divider" aria-hidden="true" />
+        <div className="top-header__title-block">
+          <h1 className="top-header__title">AI Governance</h1>
+          <span className="top-header__subtitle">Monitor AI tool usage, impact, and ROI across your team</span>
+        </div>
       </div>
 
       <div className="top-header__controls">

@@ -1,6 +1,6 @@
 /* ===================================================
-   App root layout — sidebar + main column
-   Desktop-first, collapses at tablet/mobile
+   App root layout — single-column, full-width
+   Desktop-first, responsive
    =================================================== */
 
 *,
@@ -22,38 +22,11 @@ body,
 
 .app-root {
   display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.app-main {
-  display: flex;
   flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 .app-content {
   flex: 1;
-  overflow-y: auto;
-  padding: var(--space-lg);
-}
-
-/* ── Tablet ────────────────────────────────────── */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .app-content {
-    padding: var(--space-md);
-  }
-}
-
-/* ── Mobile ─────────────────────────────────────── */
-@media (max-width: 767px) {
-  .app-root {
-    flex-direction: column;
-  }
-
-  .app-content {
-    padding: var(--space-sm);
-  }
+  /* Padding lives in the tab panel so the tab bar can be full-width */
 }
