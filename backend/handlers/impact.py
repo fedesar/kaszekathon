@@ -15,6 +15,8 @@ from services.otlp_parser import parse_rows_to_records
 from services.git_metrics import (
     fetch_by_email,
     fetch_total_prs,
+    fetch_total_commits,
+    fetch_total_loc,
     fetch_pr_lifecycle,
     fetch_ai_author_emails,
     enrich_actors_with_git,
@@ -135,10 +137,9 @@ def handle(params: Dict[str, Any]) -> dict:
     ai_prs = int(totals.get("pull_requests_by_claude_code") or 0) or fetch_total_prs(start_date, end_date)
     ai_loc = int(loc.get("added") or 0)
 
-    total_prs_count = fetch_total_prs(start_date, end_date)
-    total_commits = ai_commits
-    total_prs = max(ai_prs, total_prs_count)
-    total_loc = ai_loc
+    total_prs = max(ai_prs, fetch_total_prs(start_date, end_date))
+    total_commits = max(ai_commits, fetch_total_commits(start_date, end_date))
+    total_loc = max(ai_loc, fetch_total_loc(start_date, end_date))
 
     ai_commits_pct = round((ai_commits / total_commits * 100), 1) if total_commits > 0 else 0.0
     ai_prs_pct = round((ai_prs / total_prs * 100), 1) if total_prs > 0 else 0.0

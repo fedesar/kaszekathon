@@ -241,6 +241,32 @@ def fetch_total_prs(start_date: str, end_date: str) -> int:
     return int((row or {}).get("total") or 0)
 
 
+def fetch_total_commits(start_date: str, end_date: str) -> int:
+    """Count all commits in the date range."""
+    row = mysql_db.db_get(
+        """
+        SELECT COUNT(DISTINCT id_commit) AS total
+        FROM repo_commits
+        WHERE DATE(commit_creation_date) BETWEEN %s AND %s
+        """,
+        (start_date, end_date),
+    )
+    return int((row or {}).get("total") or 0)
+
+
+def fetch_total_loc(start_date: str, end_date: str) -> int:
+    """Sum all lines added in the date range."""
+    row = mysql_db.db_get(
+        """
+        SELECT COALESCE(SUM(lines_added), 0) AS total
+        FROM repo_commits
+        WHERE DATE(commit_creation_date) BETWEEN %s AND %s
+        """,
+        (start_date, end_date),
+    )
+    return int((row or {}).get("total") or 0)
+
+
 def _build_otel_to_git_map() -> Dict[str, str]:
     """Build {otel_email_lower: git_email_lower} from user_identity_map + OTLP payloads.
 
