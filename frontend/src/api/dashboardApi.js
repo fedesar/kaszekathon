@@ -8,7 +8,7 @@ const client = axios.create({
   headers: {
     'X-Api-Key': API_KEY,
   },
-  timeout: 30000,
+  timeout: 120000,
 });
 
 export function fetchUsage(orgId, startDate, endDate, signal) {

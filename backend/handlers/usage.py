@@ -2,30 +2,12 @@
 
 from __future__ import annotations
 
-import json
 from collections import defaultdict
 from typing import Any, Dict, List
 
 from services import mysql_db
+from services.otlp_parser import parse_rows_to_records
 from functions.claude_code.normalize import build_actor_usage, build_analytics_summary
-
-
-def _parse_records(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    records = []
-    for row in rows:
-        payload_text = row.get("payload_text") or ""
-        try:
-            data = json.loads(payload_text)
-        except (json.JSONDecodeError, TypeError):
-            continue
-
-        # payload_text may be a single record dict or a list of records
-        if isinstance(data, list):
-            records.extend(r for r in data if isinstance(r, dict))
-        elif isinstance(data, dict):
-            records.append(data)
-
-    return records
 
 
 def _build_daily_trend(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -92,17 +74,16 @@ def handle(params: Dict[str, Any]) -> dict:
 
     rows = mysql_db.db_fetch(
         """
-        SELECT payload_text
+        SELECT signal_type, payload_text
         FROM claude_code_otel_ingest
         WHERE id_organization = %s
           AND DATE(created_at) BETWEEN %s AND %s
-          AND signal_type = 'logs'
         ORDER BY created_at
         """,
         (org_id, start_date, end_date),
     )
 
-    records = _parse_records(rows)
+    records = parse_rows_to_records(rows)
     by_actor = build_actor_usage(records)
     summary = build_analytics_summary(records, by_actor)
     totals = summary.get("totals") or {}

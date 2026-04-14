@@ -22,29 +22,29 @@ function UtilizationBar({ pct }) {
   );
 }
 
-export default function ToolInvestmentCard({ tool, toolLabel, logo, seats, activeUsers, monthlyCost, pricePerSeat, utilizationPct }) {
+export default function ToolInvestmentCard({ tool, tool_label, logo, seats, active_users, monthly_cost, price_per_seat, utilization_pct }) {
   return (
     <div className="tool-card">
       <div className="tool-card__header">
         {logo && (
           <img
             src={`/${logo}`}
-            alt={toolLabel}
+            alt={tool_label}
             className="tool-card__logo"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        <span className="tool-card__name">{toolLabel}</span>
+        <span className="tool-card__name">{tool_label}</span>
       </div>
 
       <div className="tool-card__rows">
         <div className="tool-card__row">
           <span>Monthly cost</span>
-          <span className="tool-card__row-value">${monthlyCost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span className="tool-card__row-value">${monthly_cost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
         <div className="tool-card__row">
           <span>Price per seat</span>
-          <span className="tool-card__row-value">${pricePerSeat}/mo</span>
+          <span className="tool-card__row-value">${price_per_seat}/mo</span>
         </div>
         <div className="tool-card__row">
           <span>Licensed seats</span>
@@ -52,11 +52,11 @@ export default function ToolInvestmentCard({ tool, toolLabel, logo, seats, activ
         </div>
         <div className="tool-card__row">
           <span>Active users</span>
-          <span className="tool-card__row-value">{activeUsers}</span>
+          <span className="tool-card__row-value">{active_users}</span>
         </div>
       </div>
 
-      <UtilizationBar pct={utilizationPct ?? 0} />
+      <UtilizationBar pct={utilization_pct ?? 0} />
     </div>
   );
 }
