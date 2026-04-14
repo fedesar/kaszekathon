@@ -7,7 +7,7 @@ import LeadTimeChart from './LeadTimeChart.jsx';
 import StageSwitcher from './StageSwitcher.jsx';
 import ShareDonutChart from './ShareDonutChart.jsx';
 import BatchSizeChart from './BatchSizeChart.jsx';
-import CorrelationScatterChart from './CorrelationScatterChart.jsx';
+
 
 export default function ImpactTab({ orgId, startDate, endDate }) {
   const [data, setData] = useState(null);
@@ -43,7 +43,6 @@ export default function ImpactTab({ orgId, startDate, endDate }) {
     ai_commits_breakdown = {},
     loc_breakdown = {},
     pr_size_comparison = {},
-    delivery_correlation = [],
   } = data;
 
   return (
@@ -81,33 +80,6 @@ export default function ImpactTab({ orgId, startDate, endDate }) {
         <BatchSizeChart
           aiAvg={pr_size_comparison.ai_avg_loc_per_pr}
           nonAiAvg={pr_size_comparison.non_ai_avg_loc_per_pr}
-        />
-      </div>
-
-      <div className="impact-tab__scatter-grid">
-        <CorrelationScatterChart
-          title="AI Intensity vs Cycle Time"
-          data={delivery_correlation}
-          xKey="ai_intensity"
-          yKey="cycle_time"
-          xLabel="AI Intensity"
-          yLabel="Cycle Time (days)"
-        />
-        <CorrelationScatterChart
-          title="AI Intensity vs Throughput"
-          data={delivery_correlation}
-          xKey="ai_intensity"
-          yKey="throughput"
-          xLabel="AI Intensity"
-          yLabel="Throughput (PRs)"
-        />
-        <CorrelationScatterChart
-          title="AI Intensity vs Bug Rate"
-          data={delivery_correlation}
-          xKey="ai_intensity"
-          yKey="bug_pct"
-          xLabel="AI Intensity"
-          yLabel="Bug %"
         />
       </div>
     </div>

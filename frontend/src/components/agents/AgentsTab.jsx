@@ -22,8 +22,10 @@ export default function AgentsTab() {
           </p>
 
           <div className="agents-tab__tools">
-            <span className="agents-tab__tool-badge">🔧 OpenClaw</span>
-            <span className="agents-tab__tool-badge">🚀 CrewAI</span>
+            <span className="agents-tab__tool-badge">
+              <img src="/claude-code.svg" alt="Claude" className="agents-tab__tool-logo" />
+              Claude Managed Agents
+            </span>
           </div>
 
           <span className="agents-tab__badge">Coming Soon</span>

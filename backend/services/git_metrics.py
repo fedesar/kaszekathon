@@ -42,6 +42,13 @@ def fetch_by_email(org_id: int, start_date: str, end_date: str) -> Dict[str, Dic
             "commits": max(d["commits"], m["commits"]),
             "prs": max(d["prs"], m["prs"]),
         }
+
+    # Add OTLP email aliases so enrich can match by either email
+    otel_map = _build_otel_to_git_map()
+    for otel_email, git_email in otel_map.items():
+        if git_email in result and otel_email not in result:
+            result[otel_email] = result[git_email]
+
     return result
 
 
@@ -161,6 +168,66 @@ def _build_result(
     return result
 
 
+def fetch_pr_lifecycle(start_date: str, end_date: str) -> List[Dict[str, Any]]:
+    """Fetch merged PRs with lifecycle timestamps for lead time calculations.
+
+    Returns one row per merged PR with creation_date, merged_at,
+    first_approval_at, author_email (from commits), LOC, and earliest commit date.
+    repo_merge_requests does not have author_email; we derive it from repo_commits.
+    """
+    return mysql_db.db_fetch(
+        """
+        SELECT rmr.id_merge_request,
+               rmr.creation_date,
+               rmr.merged_at,
+               rmr.first_approval_at,
+               rmr.lines_added,
+               rmr.lines_deleted,
+               rmr.state,
+               MIN(rc.commit_creation_date) AS first_commit_at,
+               MIN(rc.author_email)         AS author_email
+        FROM repo_merge_requests rmr
+        LEFT JOIN repo_commits rc ON rc.merge_request_id = rmr.id_merge_request
+        WHERE rmr.merged_at IS NOT NULL
+          AND DATE(rmr.merged_at) BETWEEN %s AND %s
+        GROUP BY rmr.id_merge_request
+        ORDER BY rmr.merged_at
+        """,
+        (start_date, end_date),
+    )
+
+
+def fetch_ai_author_emails(org_id: int, by_actor: List[Dict[str, Any]]) -> set:
+    """Return lowercased emails of Claude Code users for this org.
+
+    Combines OTLP actor emails with git emails resolved via user_identity_map.
+    """
+    emails = set()
+    for actor in by_actor:
+        email = (actor.get("email_address") or "").strip().lower()
+        if email:
+            emails.add(email)
+
+    rows = mysql_db.db_fetch(
+        """
+        SELECT DISTINCT uim.git_email
+        FROM user_identity_map uim
+        WHERE uim.auth_token_sha256 IN (
+            SELECT DISTINCT authorization_token_sha256
+            FROM claude_code_otel_ingest
+            WHERE id_organization = %s
+        )
+        """,
+        (org_id,),
+    )
+    for r in rows:
+        email = (r.get("git_email") or "").strip().lower()
+        if email:
+            emails.add(email)
+
+    return emails
+
+
 def fetch_total_prs(start_date: str, end_date: str) -> int:
     """Count all PRs in the date range regardless of author attribution."""
     row = mysql_db.db_get(
@@ -198,7 +265,8 @@ def _build_otel_to_git_map() -> Dict[str, str]:
 
         otel_row = mysql_db.db_get(
             "SELECT payload_text FROM claude_code_otel_ingest "
-            "WHERE authorization_token_sha256 = %s AND signal_type = 'logs' LIMIT 1",
+            "WHERE authorization_token_sha256 = %s "
+            "AND payload_text LIKE '%%user.email%%' LIMIT 1",
             (token,),
         )
         if not otel_row:
@@ -236,24 +304,16 @@ def enrich_actors_with_git(
 ) -> None:
     """Mutate by_actor in place, overwriting LOC/commits/PRs with git-sourced values.
 
-    Matches actors by email_address against git_email (both lowercased).
-    When emails differ (e.g. OTLP paulina@leanmote.com vs git paulinaobertibusso@gmail.com),
-    uses user_identity_map to resolve the mapping.
+    git_data is keyed by both git emails and OTLP email aliases (added by fetch_by_email),
+    so a simple lookup by actor email_address is enough.
     No-op when git_data is empty.
     """
     if not git_data:
         return
 
-    otel_to_git = _build_otel_to_git_map()
-
     for actor in by_actor:
         email = (actor.get("email_address") or "").strip().lower()
         git = git_data.get(email)
-        if not git:
-            # Try mapped git_email for this OTLP email
-            mapped_email = otel_to_git.get(email)
-            if mapped_email:
-                git = git_data.get(mapped_email)
         if not git:
             continue
         loc = actor["core_metrics"]["lines_of_code"]
@@ -263,4 +323,10 @@ def enrich_actors_with_git(
         actor["core_metrics"]["pull_requests_by_claude_code"] = git["prs"]
 
 
-__all__ = ["fetch_by_email", "enrich_actors_with_git"]
+__all__ = [
+    "fetch_by_email",
+    "fetch_pr_lifecycle",
+    "fetch_ai_author_emails",
+    "fetch_total_prs",
+    "enrich_actors_with_git",
+]

@@ -89,6 +89,11 @@
   color: var(--lm-strong-gray);
 }
 
+.agents-tab__tool-logo {
+  width: 18px;
+  height: 18px;
+}
+
 .agents-tab__badge {
   display: inline-flex;
   align-items: center;
