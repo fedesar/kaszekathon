@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './App.css';
-import Sidebar from './components/layout/Sidebar.jsx';
 import TopHeader from './components/layout/TopHeader.jsx';
 import AIDashboard from './components/dashboard/AIDashboard.jsx';
 
@@ -23,18 +22,15 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <Sidebar />
-      <div className="app-main">
-        <TopHeader
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-        />
-        <main className="app-content">
-          <AIDashboard orgId={orgId} startDate={startDate} endDate={endDate} />
-        </main>
-      </div>
+      <TopHeader
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
+      <main className="app-content">
+        <AIDashboard orgId={orgId} startDate={startDate} endDate={endDate} />
+      </main>
     </div>
   );
 }

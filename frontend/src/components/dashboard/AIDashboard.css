@@ -1,48 +1,62 @@
 /* ===================================================
-   AIDashboard — main wrapper with tab navigation
+   AIDashboard — full-width tab bar + padded content
    =================================================== */
 
 .ai-dashboard {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
+/* ── Tab bar: full viewport width ───────────────── */
 .ai-dashboard__tab-bar {
   background-color: var(--lm-white);
-  border-bottom: 1px solid var(--lm-light-grey);
-  margin-bottom: var(--space-lg);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-bottom: 2px solid var(--lm-light-grey);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
+/* ── Tab panel: padded content area ─────────────── */
 .ai-dashboard__tab-panel {
   min-height: 400px;
+  padding: var(--space-lg);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-/* MUI Tabs override to match Leanmote style */
+/* MUI Tabs overrides to match Leanmote style */
 .ai-dashboard__tab-bar .MuiTabs-indicator {
   background-color: var(--lm-primary-light);
   height: 3px;
-  border-radius: 2px 2px 0 0;
 }
 
 .ai-dashboard__tab-bar .MuiTab-root {
   color: var(--lm-strong-gray);
-  padding: 14px 20px;
+  padding: 14px 24px;
+  font-size: 14px;
 }
 
 .ai-dashboard__tab-bar .MuiTab-root.Mui-selected {
   color: var(--lm-primary-light);
 }
 
+/* ── Tablet ─────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .ai-dashboard__tab-panel {
+    padding: var(--space-md);
+  }
+}
+
 /* ── Mobile ─────────────────────────────────────── */
 @media (max-width: 767px) {
-  .ai-dashboard__tab-bar {
-    margin-bottom: var(--space-md);
-  }
-
   .ai-dashboard__tab-bar .MuiTab-root {
     font-size: 12px;
     padding: 10px 12px;
+  }
+
+  .ai-dashboard__tab-panel {
+    padding: var(--space-sm);
   }
 }
