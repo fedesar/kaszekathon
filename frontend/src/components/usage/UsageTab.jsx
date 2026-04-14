@@ -45,11 +45,11 @@ export default function UsageTab({ orgId, startDate, endDate }) {
   return (
     <div className="usage-tab">
       <div className="usage-tab__kpi-grid">
-        <KpiCard label="Total Sessions" value={formatNumber(kpis.total_sessions)} icon={<Icon name="monitor" size={18} />} variant="highlight" />
-        <KpiCard label="Active Users" value={formatNumber(kpis.active_users)} icon={<Icon name="users" size={18} />} />
-        <KpiCard label="LOC Added" value={formatNumber(kpis.loc_added)} icon={<Icon name="code" size={18} />} variant="success" />
-        <KpiCard label="PRs by AI" value={formatNumber(kpis.prs_by_ai)} icon={<Icon name="gitPullRequest" size={18} />} />
-        <KpiCard label="AI Commits" value={formatNumber(kpis.ai_commits)} icon={<Icon name="gitCommit" size={18} />} />
+        <KpiCard label="Total Sessions" value={formatNumber(kpis.total_sessions)} icon={<Icon name="monitor" size={18} />} variant="highlight" tooltip="Number of Claude Code sessions started by your team in this period." />
+        <KpiCard label="Active Users" value={formatNumber(kpis.active_users)} icon={<Icon name="users" size={18} />} tooltip="Unique team members who used Claude Code at least once." />
+        <KpiCard label="LOC Added" value={formatNumber(kpis.loc_added)} icon={<Icon name="code" size={18} />} variant="success" tooltip="Total lines of code added across all commits in this period." />
+        <KpiCard label="PRs by AI" value={formatNumber(kpis.prs_by_ai)} icon={<Icon name="gitPullRequest" size={18} />} tooltip="Pull requests created by developers using Claude Code." />
+        <KpiCard label="AI Commits" value={formatNumber(kpis.ai_commits)} icon={<Icon name="gitCommit" size={18} />} tooltip="Git commits authored by Claude Code users in this period." />
       </div>
 
       <div className="usage-tab__charts-row">

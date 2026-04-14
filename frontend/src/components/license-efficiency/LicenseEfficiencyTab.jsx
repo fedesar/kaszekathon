@@ -58,17 +58,20 @@ export default function LicenseEfficiencyTab({ orgId, startDate, endDate }) {
           value={formatCurrency(license_efficiency_summary.total_investment_usd)}
           icon={<Icon name="creditCard" size={18} />}
           variant="highlight"
+          tooltip="Total amount spent on AI coding tool API usage (tokens consumed) in this period."
         />
         <KpiCard
           label="Cost per PR"
           value={formatCurrency(license_efficiency_summary.cost_per_pr)}
           icon={<Icon name="gitPullRequest" size={18} />}
+          tooltip="Average API cost per pull request. Lower means more efficient AI usage."
         />
         <KpiCard
           label="License Efficiency"
           value={license_efficiency_summary.license_efficiency_pct != null ? `${license_efficiency_summary.license_efficiency_pct}%` : '—'}
           icon={<Icon name="trendingUp" size={18} />}
           variant="success"
+          tooltip="How much of your AI tool investment translates into actual usage. Higher is better."
         />
       </div>
 

@@ -36,7 +36,7 @@ AI Governance is a serverless analytics dashboard that enables engineering organ
 
 - **Track adoption** of AI tools (Claude Code, GitHub Copilot, Cursor)
 - **Measure real impact** on delivery speed (lead time, throughput, quality)
-- **Calculate ROI** of AI tool investment (cost per PR, license utilization)
+- **Calculate license efficiency** of AI tool investment (cost per PR, seat utilization)
 - **Govern autonomous agents** (future roadmap)
 
 The system captures native telemetry from Claude Code via OpenTelemetry and cross-references it with real software delivery metrics (commits, PRs, LOC) to answer the key question:

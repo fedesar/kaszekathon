@@ -8,7 +8,7 @@ const DEFAULT_ORG_ID = Number(import.meta.env.VITE_DEFAULT_ORG_ID) || 1;
 function getDefaultDates() {
   const end = new Date();
   const start = new Date();
-  start.setDate(start.getDate() - 29);
+  start.setDate(start.getDate() - 13);
   const fmt = (d) => d.toISOString().slice(0, 10);
   return { start: fmt(start), end: fmt(end) };
 }

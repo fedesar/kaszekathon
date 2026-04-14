@@ -34,9 +34,9 @@ def _segment_actors(by_actor: List[Dict[str, Any]], period_days: int) -> Dict[st
         # "new" if the first date seen is within the period
         if dates and min(dates) >= today[:len(min(dates))]:
             new += 1
-        elif ratio > 0.25:
+        elif ratio > 0.40:
             power += 1
-        elif ratio > 0.05:
+        elif ratio > 0.10:
             casual += 1
         else:
             idle += 1

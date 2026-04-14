@@ -5,12 +5,12 @@
 The frontend is a Single Page Application (SPA) built with React 18 and Vite 4. It presents a four-tab analytics dashboard that consumes the backend REST API.
 
 **Stack:**
-- **React 18** — UI framework
-- **Vite 4** — Build tool and dev server
-- **Material UI 6** — Components and theming
-- **Recharts 2** — Charts (line, bar, donut, scatter)
-- **Axios 1.7** — HTTP client
-- **Day.js 1.11** — Date handling
+- **React 18** -- UI framework
+- **Vite 4** -- Build tool and dev server
+- **Material UI 6** -- Components and theming
+- **Recharts 2** -- Charts (line, bar, donut, scatter)
+- **Axios 1.7** -- HTTP client
+- **Day.js 1.11** -- Date handling
 
 ---
 
@@ -19,7 +19,7 @@ The frontend is a Single Page Application (SPA) built with React 18 and Vite 4. 
 ```
 frontend/src/
 ├── api/
-│   └── dashboardApi.js             # Axios client (fetchUsage, fetchImpact, fetchRoi)
+│   └── dashboardApi.js             # Axios client (fetchUsage, fetchImpact, fetchLicenseEfficiency)
 ├── components/
 │   ├── dashboard/
 │   │   └── AIDashboard.jsx         # Tab controller (Usage, Impact, ROI, Agents)
@@ -28,7 +28,7 @@ frontend/src/
 │   │   └── Sidebar.jsx             # Navigation sidebar
 │   ├── usage/
 │   │   ├── UsageTab.jsx            # AI Usage main tab
-│   │   ├── UsageTrendChart.jsx     # Daily trend chart (sessions + users)
+│   │   ├── UsageTrendChart.jsx     # Daily trend chart (users, tokens, LOC)
 │   │   └── UserActivityTable.jsx   # Per-user activity table
 │   ├── impact/
 │   │   ├── ImpactTab.jsx           # AI Impact main tab
@@ -37,16 +37,16 @@ frontend/src/
 │   │   ├── BatchSizeChart.jsx      # PR size comparison (AI vs non-AI)
 │   │   ├── CorrelationScatterChart.jsx  # Correlation scatter plots
 │   │   └── StageSwitcher.jsx       # SDLC stage toggle
-│   ├── roi/
-│   │   ├── RoiTab.jsx              # AI ROI main tab
-│   │   ├── ToolInvestmentCard.jsx  # Per-tool investment card
-│   │   ├── AdoptionDonutChart.jsx  # Adoption segment donut
-│   │   ├── DeliveryOutputChart.jsx # PRs merged per day vs cost
+│   ├── license-efficiency/
+│   │   ├── LicenseEfficiencyTab.jsx    # License Efficiency main tab
+│   │   ├── ToolInvestmentCard.jsx      # Per-tool investment card
+│   │   ├── AdoptionDonutChart.jsx      # Adoption segment donut
+│   │   ├── DeliveryOutputChart.jsx     # PRs merged per day vs cost
 │   │   └── WeeklyActiveUsersChart.jsx  # Active users per week
 │   ├── agents/
 │   │   └── AgentsTab.jsx           # Placeholder "Coming Soon"
 │   └── common/
-│       ├── KpiCard.jsx             # KPI metric card
+│       ├── KpiCard.jsx             # KPI metric card (with tooltip support)
 │       ├── ChartCard.jsx           # Chart wrapper with loading/error
 │       ├── LoadingSpinner.jsx      # Centered spinner
 │       ├── EmptyState.jsx          # Empty / error state with retry
@@ -64,7 +64,7 @@ frontend/src/
 
 Manages global dashboard state:
 - **orgId:** Organization ID (default: `VITE_DEFAULT_ORG_ID` or `1`)
-- **startDate / endDate:** Date range (default: last 30 days)
+- **startDate / endDate:** Date range (default: last 14 days)
 
 Renders `TopHeader` (date controls) and `AIDashboard` (tabs).
 
@@ -103,8 +103,8 @@ Displays AI tool adoption and usage metrics.
 - AI Commits
 
 **Charts:**
-- `UsageTrendChart` — Line/bar chart with sessions and active users per day
-- `UserActivityTable` — Table with per-user breakdown: email, active days, sessions, LOC, PRs, commits, tokens consumed, tool acceptance rate
+- `UsageTrendChart` -- Line/bar chart with active users, tokens consumed, and LOC added per day
+- `UserActivityTable` -- Table with per-user breakdown: email, active days, sessions, LOC, PRs, commits, tokens consumed, tool acceptance rate
 
 **Endpoint:** `GET /api/v1/usage`
 
@@ -113,34 +113,32 @@ Displays AI tool adoption and usage metrics.
 Displays AI impact on delivery speed and quality.
 
 **Sections:**
-- **Lead Time Timeline** — Weekly AI vs non-AI lead time comparison (placeholder data since OTEL lacks PR lifecycle data)
-- **AI Share Donuts** — Percentage of PRs, commits, and LOC attributed to AI
-- **Batch Size Comparison** — Average LOC per PR (AI vs non-AI)
-- **Delivery Correlation** — 3 scatter plots:
-  - AI Intensity vs Cycle Time
-  - AI Intensity vs Throughput (PRs)
-  - AI Intensity vs Bug Rate
+- **Lead Time Timeline** -- Weekly AI vs non-AI lead time comparison with SDLC phase breakdown (coding, waiting for review, in review). Computed from real PR lifecycle data in `repo_merge_requests`.
+- **AI Share Donuts** -- Percentage of PRs, commits, and LOC attributed to AI
+- **Batch Size Comparison** -- Average LOC per PR (AI vs non-AI)
 
 **`StageSwitcher` component:** Toggles between SDLC stages (lead_time, coding, review, deployment).
 
 **Endpoint:** `GET /api/v1/impact`
 
-### Tab 3: AI ROI (RoiTab)
+### Tab 3: AI ROI (LicenseEfficiencyTab)
 
-Displays return on investment for AI tools.
+Displays license efficiency and return on investment for AI tools.
 
 **KPIs:**
 - Total Investment (USD)
-- Cost per PR
-- ROI %
+- Cost per PR (USD)
+- License Efficiency %
 
 **Charts and cards:**
-- `ToolInvestmentCard` — Per-tool card (Claude Code, Copilot, Cursor) with seats, active users, monthly cost, utilization %
-- `AdoptionDonutChart` — Adoption segmentation (power users, casual, idle, new)
-- `DeliveryOutputChart` — PRs merged per day with cost overlay
-- `WeeklyActiveUsersChart` — Active users per ISO week
+- `ToolInvestmentCard` -- Per-tool card (Claude Code, Copilot, Cursor) with seats, active users, monthly cost, utilization %
+- `AdoptionDonutChart` -- Adoption segmentation (power users, casual, idle, new)
+- `DeliveryOutputChart` -- PRs merged per day with cost overlay
+- `WeeklyActiveUsersChart` -- Active users per ISO week
 
-**Endpoint:** `GET /api/v1/roi`
+All KPI cards support info tooltips with contextual help text on hover.
+
+**Endpoint:** `GET /api/v1/license-efficiency`
 
 ### Tab 4: AI Agents (AgentsTab)
 
@@ -157,23 +155,18 @@ Displays return on investment for AI tools.
 
 ### KpiCard
 
-Card displaying a metric with icon and color variant.
+Card displaying a metric with icon, color variant, and optional info tooltip.
 
 **Props:**
-- `title` — Metric name
-- `value` — Numeric value
-- `icon` — SVG icon name
-- `variant` — Visual style (`highlight`, `success`, `warning`)
+- `title` -- Metric name
+- `value` -- Numeric value
+- `icon` -- SVG icon name
+- `variant` -- Visual style (`highlight`, `success`, `warning`)
+- `tooltip` -- Optional help text shown on hover
 
 ### ChartCard
 
 Chart wrapper with loading and error states.
-
-**Props:**
-- `title` — Chart title
-- `loading` — Loading state
-- `error` — Error message
-- `children` — Chart component
 
 ### EmptyState
 
@@ -188,14 +181,14 @@ Inline SVG icon library: monitor, users, code, git-branch, trending-up, dollar-s
 ## API Client (dashboardApi.js)
 
 Configured with Axios:
-- **Base URL:** `VITE_API_BASE_URL` (empty in dev → uses Vite proxy)
+- **Base URL:** `VITE_API_BASE_URL` (empty in dev -> uses Vite proxy)
 - **API Key:** `VITE_API_KEY` in `X-Api-Key` header
 - **Timeout:** 120 seconds
 
 **Functions:**
-- `fetchUsage(orgId, startDate, endDate, signal)` → `GET /api/v1/usage`
-- `fetchImpact(orgId, startDate, endDate, signal)` → `GET /api/v1/impact`
-- `fetchRoi(orgId, startDate, endDate, signal)` → `GET /api/v1/roi`
+- `fetchUsage(orgId, startDate, endDate, signal)` -> `GET /api/v1/usage`
+- `fetchImpact(orgId, startDate, endDate, signal)` -> `GET /api/v1/impact`
+- `fetchLicenseEfficiency(orgId, startDate, endDate, signal)` -> `GET /api/v1/license-efficiency`
 
 All accept an optional `signal` (AbortController) for cancellation.
 
@@ -224,7 +217,7 @@ In development, requests to `/api/*` and `/health` are proxied to the local back
 
 ## Date Handling
 
-- Default range is the last 30 days
+- Default range is the last 14 days
 - Date selectors are in `TopHeader`
 - Dates are formatted as `YYYY-MM-DD`
 - ISO week format (`YYYY-Www`) is used for weekly grouping

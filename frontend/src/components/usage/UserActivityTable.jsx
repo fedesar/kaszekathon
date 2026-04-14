@@ -16,7 +16,6 @@ const COLUMNS = [
   { id: 'loc_added', label: 'LOC Added', numeric: true },
   { id: 'prs', label: 'AI PRs', numeric: true },
   { id: 'commits', label: 'AI Commits', numeric: true },
-  { id: 'tool_acceptance_rate', label: 'Acceptance Rate', numeric: true },
 ];
 
 function stableSort(arr, comparator) {
@@ -93,9 +92,6 @@ export default function UserActivityTable({ data }) {
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.loc_added?.toLocaleString()}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.prs}</TableCell>
                   <TableCell align="right" sx={{ fontSize: '13px' }}>{row.commits}</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '13px' }}>
-                    <AcceptanceBar rate={row.tool_acceptance_rate} />
-                  </TableCell>
                 </TableRow>
               ))
             )}

@@ -4,7 +4,6 @@ import { fetchImpact } from '../../api/dashboardApi.js';
 import LoadingSpinner from '../common/LoadingSpinner.jsx';
 import EmptyState from '../common/EmptyState.jsx';
 import LeadTimeChart from './LeadTimeChart.jsx';
-import StageSwitcher from './StageSwitcher.jsx';
 import ShareDonutChart from './ShareDonutChart.jsx';
 import BatchSizeChart from './BatchSizeChart.jsx';
 
@@ -13,7 +12,6 @@ export default function ImpactTab({ orgId, startDate, endDate }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeStage, setActiveStage] = useState('lead_time');
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
@@ -48,8 +46,7 @@ export default function ImpactTab({ orgId, startDate, endDate }) {
   return (
     <div className="impact-tab">
       <div className="impact-tab__lead-time-section">
-        <StageSwitcher activeStage={activeStage} onStageChange={setActiveStage} />
-        <LeadTimeChart data={lead_time_timeline} activeStage={activeStage} />
+        <LeadTimeChart data={lead_time_timeline} activeStage="lead_time" />
       </div>
 
       <div className="impact-tab__donuts-row">

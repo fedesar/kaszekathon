@@ -71,8 +71,9 @@ export default function UsageTrendChart({ data }) {
             tick={{ fontSize: 11, fill: '#999' }}
             interval="preserveStartEnd"
           />
-          <YAxis yAxisId="tokens" tick={{ fontSize: 11, fill: '#999' }} tickFormatter={formatTokens} />
-          <YAxis yAxisId="counts" orientation="right" tick={{ fontSize: 11, fill: '#999' }} allowDecimals={false} tickFormatter={formatLoc} />
+          <YAxis yAxisId="tokens" tick={{ fontSize: 11, fill: '#419FFF' }} tickFormatter={formatTokens} />
+          <YAxis yAxisId="loc" orientation="right" tick={{ fontSize: 11, fill: '#C91EEB' }} allowDecimals={false} tickFormatter={formatLoc} />
+          <YAxis yAxisId="users" hide />
           <Tooltip
             contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #E0E0E0' }}
             formatter={(value, name) => [
@@ -94,7 +95,7 @@ export default function UsageTrendChart({ data }) {
             fill="url(#gradTokens)"
           />
           <Area
-            yAxisId="counts"
+            yAxisId="loc"
             type="monotone"
             dataKey="loc_added"
             stroke="#C91EEB"
@@ -102,11 +103,11 @@ export default function UsageTrendChart({ data }) {
             fill="url(#gradLoc)"
           />
           <Area
-            yAxisId="counts"
+            yAxisId="users"
             type="monotone"
             dataKey="active_users"
             stroke="#40D390"
-            strokeWidth={2}
+            strokeWidth={2.5}
             fill="url(#gradUsers)"
           />
         </AreaChart>

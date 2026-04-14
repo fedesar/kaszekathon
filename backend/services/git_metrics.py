@@ -17,6 +17,61 @@ from services import mysql_db
 log = logging.getLogger(__name__)
 
 
+def _consolidate_email_aliases(
+    result: Dict[str, Dict[str, int]], start_date: str, end_date: str
+) -> None:
+    """Merge metrics for emails that belong to the same person.
+
+    For each identity-mapped git_email, finds all other author_emails that
+    committed under the same author_app_id. Sums their metrics and assigns
+    the combined total to the mapped email.
+    """
+    if not result:
+        return
+
+    mapped_emails = [e for e in result.keys()]
+    if not mapped_emails:
+        return
+
+    placeholders = ",".join(["%s"] * len(mapped_emails))
+    rows = mysql_db.db_fetch(
+        f"""
+        SELECT anchor.email AS mapped_email,
+               LOWER(TRIM(sibling.author_email)) AS sibling_email
+        FROM (
+            SELECT LOWER(TRIM(author_email)) AS email, author_app_id
+            FROM repo_commits
+            WHERE LOWER(TRIM(author_email)) IN ({placeholders})
+              AND author_app_id IS NOT NULL
+              AND DATE(commit_creation_date) BETWEEN %s AND %s
+            GROUP BY LOWER(TRIM(author_email)), author_app_id
+        ) anchor
+        JOIN repo_commits sibling ON sibling.author_app_id = anchor.author_app_id
+        WHERE DATE(sibling.commit_creation_date) BETWEEN %s AND %s
+          AND LOWER(TRIM(sibling.author_email)) != anchor.email
+        GROUP BY anchor.email, LOWER(TRIM(sibling.author_email))
+        """,
+        (*mapped_emails, start_date, end_date, start_date, end_date),
+    )
+
+    # Group: mapped_email -> set of sibling emails found in result
+    aliases: Dict[str, set] = {}
+    for row in rows:
+        mapped = (row.get("mapped_email") or "").strip().lower()
+        sibling = (row.get("sibling_email") or "").strip().lower()
+        if mapped and sibling and sibling in result:
+            aliases.setdefault(mapped, set()).add(sibling)
+
+    for mapped_email, siblings in aliases.items():
+        if mapped_email not in result:
+            continue
+        combined = dict(result[mapped_email])
+        for sibling in siblings:
+            for k in combined:
+                combined[k] += result[sibling].get(k, 0)
+        result[mapped_email] = combined
+
+
 def fetch_by_email(org_id: int, start_date: str, end_date: str) -> Dict[str, Dict[str, int]]:
     """Return {email_lower: {loc_added, loc_removed, commits, prs}} for the date range.
 
@@ -42,6 +97,9 @@ def fetch_by_email(org_id: int, start_date: str, end_date: str) -> Dict[str, Dic
             "commits": max(d["commits"], m["commits"]),
             "prs": max(d["prs"], m["prs"]),
         }
+
+    # Consolidate emails that belong to the same person (via author_app_id)
+    _consolidate_email_aliases(result, start_date, end_date)
 
     # Add OTLP email aliases so enrich can match by either email
     otel_map = _build_otel_to_git_map()
