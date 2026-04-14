@@ -7,7 +7,7 @@ import ImpactTab from '../impact/ImpactTab.jsx';
 import LicenseEfficiencyTab from '../license-efficiency/LicenseEfficiencyTab.jsx';
 import AgentsTab from '../agents/AgentsTab.jsx';
 
-const TABS = ['AI Usage', 'AI Impact', 'License Efficiency', 'AI Agents'];
+const TABS = ['AI Usage', 'AI Impact', 'AI ROI', 'AI Agents'];
 
 export default function AIDashboard({ orgId, startDate, endDate }) {
   const [activeTab, setActiveTab] = useState(0);
