@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 
 from services import mysql_db
 from services.otlp_parser import parse_rows_to_records
+from services.git_metrics import fetch_by_email, enrich_actors_with_git
 from functions.claude_code.normalize import build_actor_usage, build_analytics_summary
 
 
@@ -85,6 +86,7 @@ def handle(params: Dict[str, Any]) -> dict:
 
     records = parse_rows_to_records(rows)
     by_actor = build_actor_usage(records)
+    enrich_actors_with_git(by_actor, fetch_by_email(org_id, start_date, end_date))
     summary = build_analytics_summary(records, by_actor)
     totals = summary.get("totals") or {}
     loc = totals.get("lines_of_code") or {}

@@ -106,3 +106,17 @@ CREATE TABLE repo_commits (
     CONSTRAINT fk_commit_merge_request
         FOREIGN KEY (merge_request_id) REFERENCES repo_merge_requests (id_merge_request)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE user_identity_map (
+    id_user              INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+    display_name         VARCHAR(255)    NOT NULL,
+    git_email            VARCHAR(255)    NOT NULL,
+    auth_token_sha256    CHAR(64)        NOT NULL,
+
+    created_at           DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at           DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id_user),
+    UNIQUE INDEX uq_auth_token (auth_token_sha256),
+    UNIQUE INDEX uq_git_email (git_email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
