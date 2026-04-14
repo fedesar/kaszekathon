@@ -9,3 +9,6 @@ __pycache__/
 # Node
 node_modules/
 dist/
+.env
+frontend/node_modules/
+backend/venv/
