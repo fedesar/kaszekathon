@@ -225,21 +225,20 @@ OTEL: authorization_token_sha256
 Each handler computes additional metrics:
 
 ### Usage handler
-- Daily trend: sessions and active users per day
-- User list: per-user breakdown with tool acceptance rate
+- Daily trend: active users, tokens consumed, and LOC added per day
+- User list: per-user breakdown with tool acceptance rate and token consumption
 
 ### Impact handler
-- Lead time timeline: grouped by ISO week (placeholder)
-- AI share: % of PRs, commits, LOC attributed to AI
-- Batch size: average LOC per PR
-- Delivery correlation: AI intensity vs cycle time, throughput, bug rate
+- Lead time timeline: grouped by ISO week, computed from real PR lifecycle data (`repo_merge_requests`), split by AI vs non-AI author
+- AI share: % of PRs, commits, LOC attributed to AI (totals use `max(otel, git)`)
+- PR size comparison: average LOC per PR for AI vs non-AI authors
 
-### ROI handler
-- Investment: total cost (micro-USD → USD)
-- Cost per PR: investment / total PRs
-- ROI %: (investment / monthly seat cost - 1) * 100
-- Adoption segments: power, casual, idle, new users
-- Seats summary: per tool with utilization
+### License efficiency handler
+- Investment: total API cost (micro-USD -> USD)
+- Cost per PR: `total_investment / total_prs`
+- License efficiency %: `((investment / monthly_seat_cost) * 100) - 100`
+- Adoption segments: power (>40%), casual (>10%), idle (<=10%), new users
+- Seats summary: per tool with utilization %
 
 ---
 

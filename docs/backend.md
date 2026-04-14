@@ -14,7 +14,7 @@ backend/
 │   ├── health.py                # GET /health
 │   ├── usage.py                 # GET /api/v1/usage
 │   ├── impact.py                # GET /api/v1/impact
-│   └── roi.py                   # GET /api/v1/roi
+│   └── license_efficiency.py    # GET /api/v1/license-efficiency
 ├── services/
 │   ├── mysql_db.py              # RDS connection + IAM auth
 │   ├── otlp_parser.py           # OTEL payload parser
@@ -39,13 +39,13 @@ The entry point receives API Gateway events and routes them to the correct handl
 
 1. Detect if it is an API Gateway event (`requestContext` present)
 2. Extract method and path from `requestContext.http`
-3. Handle CORS preflight (`OPTIONS` → 204)
+3. Handle CORS preflight (`OPTIONS` -> 204)
 4. Validate authentication (`X-Api-Key` header)
 5. Route to handler:
-   - `GET /health` → `health.handle()`
-   - `GET /api/v1/usage` → `usage.handle(params)`
-   - `GET /api/v1/impact` → `impact.handle(params)`
-   - `GET /api/v1/roi` → `roi.handle(params)`
+   - `GET /health` -> `health.handle()`
+   - `GET /api/v1/usage` -> `usage.handle(params)`
+   - `GET /api/v1/impact` -> `impact.handle(params)`
+   - `GET /api/v1/license-efficiency` -> `license_efficiency.handle(params)`
 6. Return response with CORS headers
 
 **Parameter validation:**
@@ -61,11 +61,10 @@ Parameterized endpoints require:
 
 ### health.py
 
-Verifies database connectivity by executing `SELECT 1`.
+Verifies database connectivity by executing `SELECT 1` and measuring latency.
 
 - **No parameters required**
-- **Successful response:** `{"status": "ok"}`
-- **Error:** HTTP 503
+- **Response:** `{"status": "ok", "db_ping_ms": 12.34}`
 
 ### usage.py
 
@@ -73,112 +72,128 @@ Returns usage KPIs, daily trends, and per-user breakdown.
 
 **Processing pipeline:**
 1. Query `claude_code_otel_ingest` by org and date range
-2. Parse OTEL payloads → normalized records
-3. Aggregate by actor → per-user metrics
+2. Parse OTEL payloads -> normalized records
+3. Aggregate by actor -> per-user metrics
 4. Enrich with git data (real LOC, commits, PRs)
 5. Compute analytics summary
 
-**Response:**
-```json
-{
-  "from": "2024-01-01",
-  "to": "2024-12-31",
-  "kpis": {
-    "total_sessions": 1250,
-    "active_users": 15,
-    "loc_added": 45000,
-    "prs_by_ai": 120,
-    "ai_commits": 380
-  },
-  "daily_trend": [
-    {"date": "2024-01-01", "sessions": 25, "active_users": 8}
-  ],
-  "user_list": [
-    {
-      "email": "dev@company.com",
-      "active_days": 20,
-      "sessions": 150,
-      "loc_added": 5000,
-      "prs": 12,
-      "commits": 45,
-      "tokens_consumed": 1500000,
-      "tool_acceptance_rate": 0.87
-    }
-  ]
-}
+#### How metrics are calculated
+
+**KPIs:**
+
+| KPI | Formula | Source |
+|-----|---------|--------|
+| `total_sessions` | Sum of `num_sessions` across all actors | OTEL (distinct `session.id` per actor per day) |
+| `active_users` | Count of unique actors | OTEL actor count |
+| `loc_added` | Sum of `lines_of_code.added` across actors | Git (overwritten by `enrich_actors_with_git`) |
+| `prs_by_ai` | OTEL `pull_requests_by_claude_code` OR `fetch_total_prs()` fallback | OTEL + git fallback |
+| `ai_commits` | Sum of `commits_by_claude_code` across actors | Git (overwritten by enrichment) |
+
+**Daily trend:**
+
+| Field | Formula | Source |
+|-------|---------|--------|
+| `active_users` | Count of distinct emails with OTEL activity that day | OTEL log records |
+| `tokens_consumed` | Sum of `input + output + cache_creation + cache_read` tokens | OTEL `api_request` events |
+| `loc_added` | `SUM(lines_added)` from `repo_commits` grouped by day | Git (`repo_commits` table) |
+
+**Per-user tool acceptance rate:**
+```
+acceptance_rate = accepted_actions / (accepted_actions + rejected_actions)
+```
+Where actions are summed across all tools (Edit, Bash, etc.) from OTEL `tool_result` events.
+
+**Per-user tokens consumed:**
+```
+tokens = SUM(input + output + cache_creation + cache_read) across all models
 ```
 
 ### impact.py
 
-Returns delivery impact metrics: lead time, AI share, and correlations.
+Returns delivery impact metrics: lead time phases, AI share breakdowns, and PR size comparison.
 
-**Computed metrics:**
-- **Lead time timeline:** Grouped by ISO week. Cycle time fields are zero-filled because OTEL does not contain PR lifecycle data.
-- **AI share:** Percentage of PRs, commits, and LOC attributed to AI vs total.
-- **Batch size:** Average LOC per PR (AI vs non-AI).
-- **Delivery correlation:** Daily AI intensity vs cycle time, throughput, and bug rate.
+#### How metrics are calculated
 
-**Response:**
-```json
-{
-  "from": "2024-01-01",
-  "to": "2024-12-31",
-  "lead_time_timeline": [
-    {"week": "2024-W01", "ai_lead_time": 0, "non_ai_lead_time": 0, ...}
-  ],
-  "ai_pr_breakdown": {"ai_prs": 120, "total_prs": 120, "ai_pct": 100.0},
-  "ai_commits_breakdown": {"ai_commits": 380, "total_commits": 380, "ai_pct": 100.0},
-  "loc_breakdown": {"ai_loc": 45000, "total_loc": 45000, "ai_pct": 100.0},
-  "pr_size_comparison": {"ai_avg_loc_per_pr": 375, "non_ai_avg_loc_per_pr": 0},
-  "delivery_correlation": [
-    {"date": "2024-01-01", "ai_intensity": 0.75, "cycle_time": 0, "throughput": 5, "bug_pct": 0.0}
-  ]
-}
+**Lead time timeline (hours):**
+
+Computed from `repo_merge_requests` lifecycle timestamps, grouped by ISO week and split by AI vs non-AI author.
+
+| Phase | Formula |
+|-------|---------|
+| `lead_time` | `(merged_at - creation_date)` in hours |
+| `coding` | `(creation_date - first_commit_at)` in hours |
+| `waiting_for_review` | `(first_approval_at - creation_date)` in hours |
+| `in_review` | `(merged_at - first_approval_at)` in hours |
+| `ready_to_deploy` | `0` (not yet available) |
+
+Each phase is averaged across all PRs in that week for the AI or non-AI bucket.
+
+**AI author classification:** An author is classified as "AI" if their email appears in:
+1. OTEL actor emails (from `build_actor_usage`)
+2. Git emails resolved via `user_identity_map` for the org
+
+**AI share breakdowns:**
+
+| Metric | Formula |
+|--------|---------|
+| `ai_prs_pct` | `(ai_prs / total_prs) * 100` |
+| `ai_commits_pct` | `(ai_commits / total_commits) * 100` |
+| `ai_loc_pct` | `(ai_loc / total_loc) * 100` |
+
+Where:
+- `ai_*` values come from OTEL data enriched with git metrics
+- `total_*` values use `max(otel_value, git_query_result)` to ensure the total is never less than the AI portion. Git queries (`fetch_total_prs`, `fetch_total_commits`, `fetch_total_loc`) count all records regardless of AI attribution.
+
+**PR size comparison:**
+```
+ai_avg_loc_per_pr     = SUM(lines_added + lines_deleted) / COUNT(prs)  -- for AI authors
+non_ai_avg_loc_per_pr = SUM(lines_added + lines_deleted) / COUNT(prs)  -- for non-AI authors
+```
+Computed from `repo_merge_requests` merged PRs with author email resolved from `repo_commits`.
+
+### license_efficiency.py
+
+Returns investment summary, adoption segmentation, and delivery output.
+
+#### How metrics are calculated
+
+**License efficiency summary:**
+
+| Metric | Formula |
+|--------|---------|
+| `total_investment_usd` | `cost_by_currency["USD"] / 1,000,000` (micro-USD to USD) |
+| `cost_per_pr` | `total_investment_usd / total_prs` |
+| `license_efficiency_pct` | `((total_investment_usd / total_monthly_seat_cost) * 100) - 100` |
+
+Where:
+- `total_investment_usd` is the sum of all Claude API costs from OTEL `api_request` events
+- `total_prs` comes from OTEL or `fetch_total_prs()` fallback
+- `total_monthly_seat_cost` is `SUM(price_per_seat * seats)` across all tools
+
+A positive `license_efficiency_pct` means API usage cost exceeded seat costs (heavy usage). A negative value means seats are underutilized.
+
+**Adoption segments:**
+
+```
+ratio = active_days / period_days
 ```
 
-### roi.py
+| Segment | Criteria |
+|---------|----------|
+| `new_users` | First activity date >= today (recently joined) |
+| `power_users` | `ratio > 0.40` (active more than 40% of days) |
+| `casual_users` | `ratio > 0.10` (active 10-40% of days) |
+| `idle_users` | `ratio <= 0.10` (active less than 10% of days) |
 
-Returns ROI summary, per-tool investment breakdown, and adoption segmentation.
-
-**Computed metrics:**
-- **ROI summary:** Total investment (USD), cost per PR, ROI %.
-- **Seats summary:** Per tool (Claude Code, Copilot, Cursor) — seats, active users, monthly cost, utilization.
-- **Adoption segments:** Power users, casual, idle, new (based on active days / period ratio).
-- **Cost vs delivery:** PRs merged per day.
-- **Weekly active users:** Active users per ISO week.
-
-**User segmentation logic:**
-- `power_users`: active days ratio > 50%
-- `casual_users`: ratio > 10%
-- `idle_users`: ratio <= 10%
-- `new_users`: first activity within the current period
-
-**Response:**
-```json
-{
-  "from": "2024-01-01",
-  "to": "2024-12-31",
-  "roi_summary": {
-    "total_investment_usd": 12500.00,
-    "cost_per_pr": 104.17,
-    "roi_pct": 25.5
-  },
-  "seats_summary": [
-    {
-      "tool": "claude_code",
-      "tool_label": "Claude Code",
-      "seats": 15,
-      "active_users": 12,
-      "monthly_cost": 375.00,
-      "price_per_seat": 25.0,
-      "utilization_pct": 80.0
-    }
-  ],
-  "adoption_segments": {"power_users": 5, "casual_users": 7, "idle_users": 2, "new_users": 1},
-  "cost_vs_delivery": [{"date": "2024-01-01", "prs_merged": 3}],
-  "weekly_active_users": [{"week": "2024-W01", "active_users": 8}]
-}
+**Seat utilization per tool:**
 ```
+utilization_pct = min(active_users, seats) / seats * 100
+```
+Capped at 100%. Tool pricing is configurable via env vars (defaults: Claude Code $25, Copilot $19, Cursor $20).
+
+**Cost vs delivery:** Daily count of merged PRs from `repo_merge_requests` (direct SQL query, not OTEL).
+
+**Weekly active users:** Distinct actor keys per ISO week from OTEL activity dates.
 
 ---
 
@@ -196,10 +211,10 @@ Handles MySQL/RDS connections with IAM authentication support.
 - **DictCursor:** Results returned as Python dictionaries.
 
 **Public functions:**
-- `db_fetch(sql, params)` → `List[Dict]` (multiple rows)
-- `db_get(sql, params)` → `Dict | None` (single row)
-- `db_execute(sql, params)` → `int` (last inserted ID)
-- `get_connection()` → `pymysql.Connection`
+- `db_fetch(sql, params)` -> `List[Dict]` (multiple rows)
+- `db_get(sql, params)` -> `Dict | None` (single row)
+- `db_execute(sql, params)` -> `int` (last inserted ID)
+- `get_connection()` -> `pymysql.Connection`
 
 ### otlp_parser.py
 
@@ -208,23 +223,23 @@ Converts raw OTEL payloads from the DB into normalized records.
 **Input:** Rows from `claude_code_otel_ingest` with `signal_type` and `payload_text`.
 
 **Processing:**
-1. Only processes rows with `signal_type = 'logs'` (metrics are skipped — logs contain all relevant data)
-2. Navigates the OTEL structure: `resourceLogs → scopeLogs → logRecords[]`
+1. Only processes rows with `signal_type = 'logs'` (metrics are skipped)
+2. Navigates the OTEL structure: `resourceLogs -> scopeLogs -> logRecords[]`
 3. Extracts attributes from each log record
 4. Groups by `(email, date)`
 5. Dispatches to handlers based on `event.name`:
-   - `api_request` → costs, tokens, model
-   - `tool_result` / `tool_use_result` → accepted/rejected per tool
-   - `git_commit` → commit counter
-   - `pr_create` → PR counter
-   - `lines_of_code` → LOC added/removed
+   - `api_request` -> costs, tokens, model
+   - `tool_result` / `tool_use_result` -> accepted/rejected per tool
+   - `git_commit` -> commit counter
+   - `pr_create` -> PR counter
+   - `lines_of_code` -> LOC added/removed
 
 **Cost encoding (MICRO_USD):**
 
 Claude API costs are small floats (e.g., `0.0166836 USD`). To avoid truncation when converting to integers, they are multiplied by `1,000,000`:
 
 ```
-0.0166836 USD → 16,683 micro-USD (stored as int)
+0.0166836 USD -> 16,683 micro-USD (stored as int)
 ```
 
 Handlers that return USD to the frontend divide by `MICRO_USD` (1,000,000).
@@ -236,16 +251,24 @@ Fetches real git metrics (LOC, commits, PRs) by cross-referencing OTEL tokens wi
 **Identity resolution flow:**
 ```
 claude_code_otel_ingest.authorization_token_sha256
-    → user_identity_map.auth_token_sha256
-    → user_identity_map.git_email
-    → repo_commits.author_email / repo_merge_requests.author_internal_id
+    -> user_identity_map.auth_token_sha256
+    -> user_identity_map.git_email
+    -> repo_commits.author_email / repo_merge_requests.author_app_id
 ```
 
-**Dual strategy:**
-1. **Primary:** Join via `user_identity_map` (org-scoped, handles different git/Claude emails)
-2. **Fallback:** Direct match by `repo_commits.author_email` when the identity map is empty
+**Public functions:**
 
-**`enrich_actors_with_git()` function:** Overwrites OTEL metrics with real git data (more reliable) in-place on the actor list.
+| Function | Description |
+|----------|-------------|
+| `fetch_by_email(org_id, start, end)` | Per-user LOC, commits, PRs. Merges identity map + direct match, max of each metric |
+| `enrich_actors_with_git(by_actor, git_data)` | Overwrites OTEL metrics with git values in-place |
+| `fetch_pr_lifecycle(start, end)` | Merged PRs with lifecycle timestamps for lead time |
+| `fetch_ai_author_emails(org_id, by_actor)` | Set of emails for Claude Code users (OTEL + identity map) |
+| `fetch_total_prs(start, end)` | Total PR count (all authors) |
+| `fetch_total_commits(start, end)` | Total commit count (all authors) |
+| `fetch_total_loc(start, end)` | Total lines added (all authors) |
+
+**OTEL-to-git email mapping:** `_build_otel_to_git_map()` bridges OTEL emails (from telemetry) to git emails (from identity map) via `auth_token_sha256`. This handles cases where a developer uses different emails for Claude Code and git.
 
 ### cache.py
 
@@ -258,8 +281,6 @@ Simple in-memory cache with TTL to avoid re-parsing OTEL payloads on consecutive
 ### logging_utils.py
 
 Structured JSON logging compatible with CloudWatch Insights.
-
-Each log includes: level, timestamp, type, status, request_id, org_id, and extra fields.
 
 ---
 

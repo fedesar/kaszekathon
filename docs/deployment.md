@@ -59,7 +59,7 @@ The backend infrastructure is defined as code using AWS SAM (Serverless Applicat
 - `GET /health`
 - `GET /api/v1/usage`
 - `GET /api/v1/impact`
-- `GET /api/v1/roi`
+- `GET /api/v1/license-efficiency`
 
 ### Environment variables (SSM)
 
