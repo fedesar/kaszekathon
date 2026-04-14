@@ -1,41 +1,47 @@
 import React from 'react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 import ChartCard from '../common/ChartCard.jsx';
 
+function BarRow({ label, value, maxValue, color }) {
+  const pct = maxValue > 0 ? (value / maxValue) * 100 : 0;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+      <span style={{ width: 90, fontSize: 13, fontWeight: 500, color: '#444', flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, background: '#F0F0F0', borderRadius: 6, height: 28, overflow: 'hidden' }}>
+        <div
+          style={{
+            width: `${Math.max(pct, 2)}%`,
+            height: '100%',
+            background: color,
+            borderRadius: 6,
+            transition: 'width 0.4s ease',
+          }}
+        />
+      </div>
+      <span style={{ width: 80, fontSize: 14, fontWeight: 600, color: '#333', textAlign: 'right', flexShrink: 0 }}>
+        {(value || 0).toLocaleString()} LOC
+      </span>
+    </div>
+  );
+}
+
 export default function BatchSizeChart({ aiAvg, nonAiAvg }) {
-  const data = [
-    {
-      name: 'Avg LOC / PR',
-      'AI-Assisted': aiAvg || 0,
-      'Non-AI': nonAiAvg || 0,
-    },
-  ];
+  const ai = aiAvg || 0;
+  const nonAi = nonAiAvg || 0;
+  const maxVal = Math.max(ai, nonAi, 1);
+  const diff = nonAi > 0 ? Math.round(((ai - nonAi) / nonAi) * 100) : 0;
+  const diffLabel = diff > 0 ? `${diff}% smaller` : diff < 0 ? `${Math.abs(diff)}% larger` : '';
 
   return (
     <ChartCard title="Batch Size" subtitle="Average lines of code per pull request">
-      <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }} barSize={40}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E0E0E0" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#999' }} />
-          <YAxis tick={{ fontSize: 11, fill: '#999' }} allowDecimals={false} />
-          <Tooltip
-            contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #E0E0E0' }}
-            formatter={(v, n) => [`${v} LOC`, n]}
-          />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
-          <Bar dataKey="AI-Assisted" fill="#419FFF" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="Non-AI" fill="#ECB22E" radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ padding: '16px 0' }}>
+        <BarRow label="AI-Assisted" value={ai} maxValue={maxVal} color="#419FFF" />
+        <BarRow label="Non-AI" value={nonAi} maxValue={maxVal} color="#ECB22E" />
+        {diffLabel && (
+          <p style={{ fontSize: 12, color: '#999', margin: '8px 0 0 102px' }}>
+            AI PRs are {diffLabel} on average
+          </p>
+        )}
+      </div>
     </ChartCard>
   );
 }
