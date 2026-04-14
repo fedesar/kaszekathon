@@ -1,28 +1,28 @@
 # Pitch: AI Governance in the "Agent-First" Era — 2 minutes
 
-## 1. "The Shift" (20 sec) — Context + Problem
+## 1. "The Problem" (20 sec) — Context + Problem
 
-"The future of software development is already here. Anthropic made it clear with Claude Code: humans direct, agents execute. Today Claude writes entire features, refactors codebases, and opens pull requests autonomously. Companies are spending fortunes on this. But ask any CTO: are your agents actually increasing team throughput, or just burning tokens? They have no idea. They bought a Formula 1 engine with no dashboard."
+"Companies are adopting AI at scale. Teams now use multiple tools — Claude, Codex, Cursor. Each has its own billing, its own data, its own silo. And no CTO can answer one simple question: is all this AI spend helping my business grow? They bought a Formula 1 engine with no dashboard."
 
-## 2. "The Signal" (10 sec) — The Opportunity
+## 2. "The Gap" (10 sec) — The Opportunity
 
-"The data already exists. Claude Code emits standard telemetry — cost, tokens, model, success rate — but all that signal dies in each developer's terminal. Nobody is watching it."
+"Every tool reports cost, tokens, usage. But nobody puts it together. And nobody connects it to what actually matters: is AI helping my teams deliver real value?"
 
 ## 3. "What We Built" (40 sec) — The Solution (Demo)
 
-"That's why we built **AI Governance** inside Leanmote. The control panel for the agent-first era."
+"That's why we built **AI Governance** inside Leanmote. One single layer across your entire AI toolchain."
 
 *(Show the live dashboard)*
 
-- **Cost & Adoption:** "No more guessing. See exactly how much you're spending on Claude, who's using it, and the month-end forecast."
-- **Efficiency:** "See which models — Opus, Sonnet, Haiku — are most efficient for each type of task."
-- **Agent Workforce:** "See your autonomous agents as team members. Tasks completed, cost per task, success rate."
-- **AI Insights:** "Claude analyzing its own telemetry to give you actionable alerts. AI governing AI."
+- **Unified Spend:** "One view. Claude, Codex, Cursor — all in one place. Who uses what, how much it costs, the trend."
+- **Smart Comparison:** "Which tool works best for which task? Real data, not guessing."
+- **Business Value:** "Team A uses more AI and delivers twice the business impact. Team B spends the same but nothing reaches customers. Now you know where to look."
+- **AI Insights:** "Claude analyzing the telemetry to give you actionable alerts. AI governing AI."
 
-## 4. "The Magic" (15 sec) — The Difference
+## 4. "The Closed Loop" (20 sec) — The Difference
 
-"The setup is almost embarrassingly simple. Zero friction. One single line of configuration in Claude Code and it starts reporting. No invasive agents installed on anyone's machine. We leverage the native telemetry Claude already generates — we just capture it and turn it into intelligence."
+"But we don't just show you data. We detect bad patterns — an agent keeps delivering code that gets rejected and reworked: tokens burned, time wasted, zero value. We catch that. And from that insight, you directly create a task for your harness agent to fix the workflow. Insight to action, all in one place."
 
-## 5. "The Vision" (15 sec) — The Close
+## 5. "The Close" (10 sec)
 
-"Anthropic is building the most capable agents in the world. We're building the system to govern them. And the next step is crossing AI consumption with real Delivery data. Are the teams spending the most on Claude actually the ones shipping the fastest? That answer is worth millions — and we have it."
+"Setup takes minutes. One line of config per tool. Companies are scaling AI fast — but scaling without governance is just scaling chaos. **Observe. Understand. Act.**"
