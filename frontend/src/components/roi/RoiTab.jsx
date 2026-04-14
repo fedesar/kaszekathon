@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './RoiTab.css';
 import { fetchRoi } from '../../api/dashboardApi.js';
 import KpiCard from '../common/KpiCard.jsx';
+import Icon from '../common/Icon.jsx';
 import LoadingSpinner from '../common/LoadingSpinner.jsx';
 import EmptyState from '../common/EmptyState.jsx';
 import ToolInvestmentCard from './ToolInvestmentCard.jsx';
@@ -38,8 +39,8 @@ export default function RoiTab({ orgId, startDate, endDate }) {
   }, [orgId, startDate, endDate, retryCount]);
 
   if (loading) return <LoadingSpinner message="Loading ROI data..." />;
-  if (error) return <EmptyState icon="⚠️" title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
-  if (!data) return <EmptyState icon="📭" title="No data" description="No ROI data found for this period." />;
+  if (error) return <EmptyState title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
+  if (!data) return <EmptyState title="No data" description="No ROI data found for this period." />;
 
   const {
     roi_summary = {},
@@ -55,18 +56,18 @@ export default function RoiTab({ orgId, startDate, endDate }) {
         <KpiCard
           label="Total Investment"
           value={formatCurrency(roi_summary.total_investment_usd)}
-          icon="💳"
+          icon={<Icon name="creditCard" size={18} />}
           variant="highlight"
         />
         <KpiCard
           label="Cost per PR"
           value={formatCurrency(roi_summary.cost_per_pr)}
-          icon="🔀"
+          icon={<Icon name="gitPullRequest" size={18} />}
         />
         <KpiCard
           label="ROI"
           value={roi_summary.roi_pct != null ? `${roi_summary.roi_pct}%` : '—'}
-          icon="📈"
+          icon={<Icon name="trendingUp" size={18} />}
           variant="success"
         />
       </div>

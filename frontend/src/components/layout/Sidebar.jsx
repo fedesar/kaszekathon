@@ -1,12 +1,13 @@
 import React from 'react';
 import './Sidebar.css';
+import Icon from '../common/Icon.jsx';
 
 const NAV_ITEMS = [
-  { icon: '📊', label: 'Performance', active: false },
-  { icon: '🤖', label: 'AI Governance', active: true },
-  { icon: '💰', label: 'Project Investment', active: false },
-  { icon: '🔍', label: 'Bottleneck Insights', active: false },
-  { icon: '🎯', label: 'Strategic Overview', active: false },
+  { icon: 'barChart',    label: 'Performance',         active: false },
+  { icon: 'cpu',         label: 'AI Governance',        active: true  },
+  { icon: 'dollarSign',  label: 'Project Investment',   active: false },
+  { icon: 'search',      label: 'Bottleneck Insights',  active: false },
+  { icon: 'target',      label: 'Strategic Overview',   active: false },
 ];
 
 export default function Sidebar() {
@@ -27,7 +28,9 @@ export default function Sidebar() {
             key={item.label}
             className={`sidebar__nav-item${item.active ? ' sidebar__nav-item--active' : ''}`}
           >
-            <span className="sidebar__nav-icon">{item.icon}</span>
+            <span className="sidebar__nav-icon">
+              <Icon name={item.icon} size={18} />
+            </span>
             <span className="sidebar__nav-label">{item.label}</span>
           </div>
         ))}

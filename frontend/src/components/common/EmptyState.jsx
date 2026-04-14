@@ -1,11 +1,16 @@
 import React from 'react';
 import './EmptyState.css';
+import Icon from './Icon.jsx';
 
-export default function EmptyState({ icon = '📭', title, description, variant = '', onRetry }) {
+export default function EmptyState({ title, description, variant = '', onRetry }) {
   const cls = `empty-state${variant ? ` empty-state--${variant}` : ''}`;
+  const iconName = variant === 'error' ? 'alertTriangle' : 'inbox';
+
   return (
     <div className={cls}>
-      <span className="empty-state__icon">{icon}</span>
+      <div className="empty-state__icon-wrap">
+        <Icon name={iconName} size={28} />
+      </div>
       {title && <span className="empty-state__title">{title}</span>}
       {description && <span className="empty-state__description">{description}</span>}
       {onRetry && (
