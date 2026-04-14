@@ -1,4 +1,4 @@
-# Leanmote AI Governance — Project Documentation
+# Leanmote AI Governance - Project Documentation
 
 Complete technical documentation for the **AI Governance Dashboard** by Leanmote, built for the **Kaszek x Anthropic x Digital House Hackathon**.
 
@@ -25,8 +25,8 @@ Complete technical documentation for the **AI Governance Dashboard** by Leanmote
 
 | Document | Description |
 |----------|-------------|
-| [Pitch 2 minutes](pitch-2min.md) | Short presentation script |
-| [Pitch 3 minutes](pitch-3min.md) | Extended presentation script |
+| [Pitch 2 minutes](pitch-2min-en.md) | Short presentation script |
+| [Pitch 3 minutes](pitch-3min-en.md) | Extended presentation script |
 
 ---
 

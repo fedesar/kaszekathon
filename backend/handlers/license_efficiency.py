@@ -9,6 +9,7 @@ from typing import Any, Dict, List
 
 from services import mysql_db
 from services.otlp_parser import parse_rows_to_records, MICRO_USD
+from services.git_metrics import fetch_total_prs
 from functions.claude_code.normalize import build_actor_usage, build_analytics_summary
 
 
@@ -33,9 +34,9 @@ def _segment_actors(by_actor: List[Dict[str, Any]], period_days: int) -> Dict[st
         # "new" if the first date seen is within the period
         if dates and min(dates) >= today[:len(min(dates))]:
             new += 1
-        elif ratio > 0.5:
+        elif ratio > 0.25:
             power += 1
-        elif ratio > 0.10:
+        elif ratio > 0.05:
             casual += 1
         else:
             idle += 1
@@ -43,15 +44,20 @@ def _segment_actors(by_actor: List[Dict[str, Any]], period_days: int) -> Dict[st
     return {"power_users": power, "casual_users": casual, "idle_users": idle, "new_users": new}
 
 
-def _build_cost_vs_delivery(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    day_prs: Dict[str, int] = defaultdict(int)
-    for r in records:
-        date_val = r.get("date")
-        if not date_val:
-            continue
-        core = r.get("core_metrics") or {}
-        day_prs[date_val] += int(core.get("pull_requests_by_claude_code") or 0)
-    return [{"date": d, "prs_merged": prs} for d, prs in sorted(day_prs.items())]
+def _build_cost_vs_delivery(start_date: str, end_date: str) -> List[Dict[str, Any]]:
+    """Daily merged PRs from repo_merge_requests (OTLP doesn't carry PR data)."""
+    rows = mysql_db.db_fetch(
+        """
+        SELECT DATE(merged_at) AS d, COUNT(DISTINCT id_merge_request) AS prs_merged
+        FROM repo_merge_requests
+        WHERE merged_at IS NOT NULL
+          AND DATE(merged_at) BETWEEN %s AND %s
+        GROUP BY DATE(merged_at)
+        ORDER BY d
+        """,
+        (start_date, end_date),
+    )
+    return [{"date": str(r["d"]), "prs_merged": int(r["prs_merged"])} for r in rows]
 
 
 def _build_weekly_active_users(by_actor: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -141,7 +147,7 @@ def handle(params: Dict[str, Any]) -> dict:
     cost_by_currency = summary.get("cost_by_currency") or {}
     # Costs are stored as micro-USD integers; convert back to dollars
     total_investment = float(cost_by_currency.get("USD") or 0.0) / MICRO_USD
-    total_prs = int(totals.get("pull_requests_by_claude_code") or 0)
+    total_prs = int(totals.get("pull_requests_by_claude_code") or 0) or fetch_total_prs(start_date, end_date)
     cost_per_pr = round(total_investment / total_prs, 2) if total_prs > 0 else 0.0
 
     active_users = summary.get("actor_count", 0)
@@ -161,6 +167,6 @@ def handle(params: Dict[str, Any]) -> dict:
         },
         "seats_summary": seats_summary,
         "adoption_segments": adoption,
-        "cost_vs_delivery": _build_cost_vs_delivery(records),
+        "cost_vs_delivery": _build_cost_vs_delivery(start_date, end_date),
         "weekly_active_users": _build_weekly_active_users(by_actor),
     }

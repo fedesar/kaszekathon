@@ -11,28 +11,51 @@ from services.git_metrics import fetch_by_email, fetch_total_prs, enrich_actors_
 from functions.claude_code.normalize import build_actor_usage, build_analytics_summary
 
 
-def _build_daily_trend(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    day_sessions: Dict[str, int] = defaultdict(int)
+def _build_daily_trend(
+    records: List[Dict[str, Any]], start_date: str, end_date: str
+) -> List[Dict[str, Any]]:
     day_actors: Dict[str, set] = defaultdict(set)
+    day_tokens: Dict[str, int] = defaultdict(int)
 
     for r in records:
         date = r.get("date")
         if not date:
             continue
-        core = r.get("core_metrics") or {}
-        sessions = int(core.get("num_sessions") or 0)
-        day_sessions[date] += sessions
 
         actor = r.get("actor") or {}
         email = actor.get("email_address") or actor.get("api_key_name") or "unknown"
         day_actors[date].add(email)
 
-    all_dates = sorted(set(list(day_sessions.keys()) + list(day_actors.keys())))
+        for m in r.get("model_breakdown", []):
+            if not isinstance(m, dict):
+                continue
+            tokens = m.get("tokens") if isinstance(m.get("tokens"), dict) else {}
+            day_tokens[date] += sum(
+                int(tokens.get(k) or 0) for k in ("input", "output", "cache_creation", "cache_read")
+            )
+
+    # LOC from repo_commits (OTLP doesn't carry LOC data)
+    day_loc: Dict[str, int] = defaultdict(int)
+    loc_rows = mysql_db.db_fetch(
+        """
+        SELECT DATE(commit_creation_date) AS d, COALESCE(SUM(lines_added), 0) AS loc
+        FROM repo_commits
+        WHERE DATE(commit_creation_date) BETWEEN %s AND %s
+        GROUP BY DATE(commit_creation_date)
+        """,
+        (start_date, end_date),
+    )
+    for row in loc_rows:
+        d = str(row.get("d") or "")
+        day_loc[d] += int(row.get("loc") or 0)
+
+    all_dates = sorted(set(list(day_actors.keys()) + list(day_tokens.keys()) + list(day_loc.keys())))
     return [
         {
             "date": d,
-            "sessions": day_sessions.get(d, 0),
             "active_users": len(day_actors.get(d, set())),
+            "tokens_consumed": day_tokens.get(d, 0),
+            "loc_added": day_loc.get(d, 0),
         }
         for d in all_dates
     ]
@@ -108,6 +131,6 @@ def handle(params: Dict[str, Any]) -> dict:
             "prs_by_ai": int(totals.get("pull_requests_by_claude_code") or 0) or fetch_total_prs(start_date, end_date),
             "ai_commits": int(totals.get("commits_by_claude_code") or 0),
         },
-        "daily_trend": _build_daily_trend(records),
+        "daily_trend": _build_daily_trend(records, start_date, end_date),
         "user_list": _build_user_list(by_actor),
     }

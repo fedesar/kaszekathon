@@ -187,7 +187,7 @@ def fetch_pr_lifecycle(start_date: str, end_date: str) -> List[Dict[str, Any]]:
                MIN(rc.commit_creation_date) AS first_commit_at,
                MIN(rc.author_email)         AS author_email
         FROM repo_merge_requests rmr
-        LEFT JOIN repo_commits rc ON rc.merge_request_id = rmr.id_merge_request
+        LEFT JOIN repo_commits rc ON rc.author_app_id = rmr.author_app_id
         WHERE rmr.merged_at IS NOT NULL
           AND DATE(rmr.merged_at) BETWEEN %s AND %s
         GROUP BY rmr.id_merge_request
