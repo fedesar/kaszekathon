@@ -34,8 +34,8 @@ export default function ImpactTab({ orgId, startDate, endDate }) {
   }, [orgId, startDate, endDate, retryCount]);
 
   if (loading) return <LoadingSpinner message="Loading impact data..." />;
-  if (error) return <EmptyState icon="⚠️" title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
-  if (!data) return <EmptyState icon="📭" title="No data" description="No impact data found for this period." />;
+  if (error) return <EmptyState title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
+  if (!data) return <EmptyState title="No data" description="No impact data found for this period." />;
 
   const {
     lead_time_timeline = [],

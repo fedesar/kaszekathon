@@ -12,9 +12,20 @@
   text-align: center;
 }
 
-.empty-state__icon {
-  font-size: 48px;
-  opacity: 0.4;
+.empty-state__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background-color: rgba(28, 46, 98, 0.06);
+  color: var(--lm-medium-grey);
+}
+
+.empty-state--error .empty-state__icon-wrap {
+  background-color: rgba(255, 51, 102, 0.08);
+  color: var(--lm-red);
 }
 
 .empty-state__title {

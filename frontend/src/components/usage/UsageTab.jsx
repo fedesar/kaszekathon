@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './UsageTab.css';
 import { fetchUsage } from '../../api/dashboardApi.js';
 import KpiCard from '../common/KpiCard.jsx';
+import Icon from '../common/Icon.jsx';
 import LoadingSpinner from '../common/LoadingSpinner.jsx';
 import EmptyState from '../common/EmptyState.jsx';
 import UsageTrendChart from './UsageTrendChart.jsx';
@@ -36,19 +37,19 @@ export default function UsageTab({ orgId, startDate, endDate }) {
   }, [orgId, startDate, endDate, retryCount]);
 
   if (loading) return <LoadingSpinner message="Loading usage data..." />;
-  if (error) return <EmptyState icon="⚠️" title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
-  if (!data) return <EmptyState icon="📭" title="No data" description="No usage data found for this period." />;
+  if (error) return <EmptyState title="Error" description={error} variant="error" onRetry={() => setRetryCount((c) => c + 1)} />;
+  if (!data) return <EmptyState title="No data" description="No usage data found for this period." />;
 
   const { kpis = {}, daily_trend = [], user_list = [] } = data;
 
   return (
     <div className="usage-tab">
       <div className="usage-tab__kpi-grid">
-        <KpiCard label="Total Sessions" value={formatNumber(kpis.total_sessions)} icon="💻" variant="highlight" />
-        <KpiCard label="Active Users" value={formatNumber(kpis.active_users)} icon="👥" />
-        <KpiCard label="LOC Added" value={formatNumber(kpis.loc_added)} icon="📝" variant="success" />
-        <KpiCard label="PRs by AI" value={formatNumber(kpis.prs_by_ai)} icon="🔀" />
-        <KpiCard label="AI Commits" value={formatNumber(kpis.ai_commits)} icon="✅" />
+        <KpiCard label="Total Sessions" value={formatNumber(kpis.total_sessions)} icon={<Icon name="monitor" size={18} />} variant="highlight" />
+        <KpiCard label="Active Users" value={formatNumber(kpis.active_users)} icon={<Icon name="users" size={18} />} />
+        <KpiCard label="LOC Added" value={formatNumber(kpis.loc_added)} icon={<Icon name="code" size={18} />} variant="success" />
+        <KpiCard label="PRs by AI" value={formatNumber(kpis.prs_by_ai)} icon={<Icon name="gitPullRequest" size={18} />} />
+        <KpiCard label="AI Commits" value={formatNumber(kpis.ai_commits)} icon={<Icon name="gitCommit" size={18} />} />
       </div>
 
       <div className="usage-tab__charts-row">
